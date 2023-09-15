@@ -20,7 +20,7 @@
 #include "maindialog.h"
 
 MainDialog::MainDialog(QWidget *parent)
-    : QDialog(parent), m_timeclockRunning (false), m_break (false)
+    : QDialog(parent)
 {
     ui.setupUi (this);
     ui.workingTime->display ("--:--");
@@ -32,114 +32,62 @@ MainDialog::MainDialog(QWidget *parent)
 
 void MainDialog::clockInOut ()
 {
-    if (!m_timeclockRunning)
+    if (!m_wtClock.hasClockedIn ())
     {
-        ui.btnClockInOut->setText (tr("Clock out"));
-        m_events.clear ();
+        ui.treeWidget->clear();
         m_updateTimer->start (1000 * 60);
-        m_events.append (QPair<EventType, QDateTime>(CLOCK_IN, QDateTime::currentDateTime ()));
+        updateList (tr("Clocked in"), m_wtClock.clockIn ());
+
+        ui.btnClockInOut->setText (tr("Clock out"));
     }
     else
     {
-        ui.btnClockInOut->setText (tr("Clock in"));
         m_updateTimer->stop ();
-        if (m_break)
-            breakStartStop ();
+        if (m_wtClock.takesBreak ())
+            breakStartStop();
+        updateList (tr("Clocked Out"), m_wtClock.clockOut());
 
-        m_events.append (QPair<EventType, QDateTime>(CLOCK_OUT, QDateTime::currentDateTime ()));
+        ui.btnClockInOut->setText (tr("Clock in"));
     }
-    m_timeclockRunning = !m_timeclockRunning;
     calcTime ();
-    updateList ();
 }
 
 void MainDialog::breakStartStop ()
 {
-    if (m_timeclockRunning)
+    if (m_wtClock.hasClockedIn())
     {
-        if (!m_break)
+        if (!m_wtClock.takesBreak ())
         {
-            ui.btnBreak->setText (tr("Stop break"));
-            m_events.append (QPair<EventType, QDateTime>(BREAK_START, QDateTime::currentDateTime ()));
+            updateList (tr("Break"), m_wtClock.startBreak());
             ui.workingTime->setSegmentStyle (QLCDNumber::Outline);
+
+            ui.btnBreak->setText (tr("Stop break"));
         }
         else
         {
-            ui.btnBreak->setText (tr("Start break"));
-            m_events.append (QPair<EventType, QDateTime>(BREAK_STOP, QDateTime::currentDateTime ()));
+            updateList (tr("Break end"), m_wtClock.finishBreak());
             ui.workingTime->setSegmentStyle (QLCDNumber::Flat);
+
+            ui.btnBreak->setText (tr("Start break"));
         }
-        m_break = !m_break;
         calcTime ();
-        updateList ();
     }
 }
 
 void MainDialog::calcTime ()
 {
-    Q_ASSERT (m_events.count());
-
     unsigned displayHours = 0, displayMinutes = 0;
-    QDateTime currTime = m_events.last().first == BREAK_START ? m_events.last().second : QDateTime::currentDateTime();
-    qint64 elapsedSecs = m_events.first().second.secsTo (currTime) - getBreakDuration ();
-
-    Q_ASSERT (elapsedSecs >= 0);
-
-    displayHours    = elapsedSecs / 3600;
-    displayMinutes  = (unsigned)(elapsedSecs - displayHours * 3600)/60;
-    displayMinutes += elapsedSecs % 60 >= 30 ? 1 : 0;
+    m_wtClock.getWorkingTime (displayHours, displayMinutes);
  
     QString text = QString ("%1:%2").arg(displayHours, 2, 10, QChar('0')).arg(displayMinutes, 2, 10, QChar('0'));
     ui.workingTime->display (text);
- }
-
-qint64 MainDialog::getBreakDuration ()
-{
-    qint64 duration = 0;
-    if (m_events.count())
-    {
-        QDateTime begin, end;
-        for (const QPair<EventType, QDateTime>& item : m_events)
-        {
-            if (item.first == BREAK_START)
-            {
-                begin = item.second;
-            }
-            else if (item.first == BREAK_STOP)
-            {
-                end = item.second;
-                duration += begin.secsTo (end);
-            }
-        }
-    }
-    return duration;
 }
 
-void MainDialog::updateList ()
+void MainDialog::updateList (const QString& caption, const QDateTime& time)
 {
-    bool multipleDays = m_events.first().second.date() != m_events.last().second.date();
-
-    ui.treeWidget->clear ();
-    for (const QPair<EventType, QDateTime>& item : m_events)
-    {
-        QTreeWidgetItem* i;
-        i = new QTreeWidgetItem (ui.treeWidget);
-        i->setText (0, multipleDays ? QLocale::system().toString(item.second, QLocale::ShortFormat) : item.second.toString ("hh:mm:ss"));
-        switch (item.first)
-        {
-        case CLOCK_IN:
-            i->setText (1, tr("Clocked in"));
-            break;
-        case CLOCK_OUT:
-            i->setText (1, tr("Clocked out"));
-            break;
-        case BREAK_START:
-            i->setText (1, tr("Break"));
-            break;
-        case BREAK_STOP:
-            i->setText (1, tr("Break end"));
-            break;
-        }
-    }
+    bool multipleDays = m_wtClock.exceedsDay ();
+    QTreeWidgetItem* i = new QTreeWidgetItem (ui.treeWidget);
+    i->setText (0, multipleDays ? QLocale::system().toString(time, QLocale::ShortFormat) : time.toString ("hh:mm:ss"));
+    i->setText (1, caption);
     ui.treeWidget->resizeColumnToContents (0);
 }

@@ -17,35 +17,34 @@
  */
 
 
-#ifndef MAINDIALOG_H
-#define MAINDIALOG_H
+#ifndef STECHUHR_H
+#define STECHUHR_H
 
-#include <QTimer>
 #include <QDateTime>
 #include <QList>
 #include <QPair>
 
-#include "ui_mainDialog.h"
-#include "stechuhr.h"
-
-class MainDialog : public QDialog
+class Stechuhr
 {
-    Q_OBJECT
-
 public:
-    explicit MainDialog(QWidget *parent = nullptr);
+    Stechuhr ();
 
-private slots:
-    void calcTime ();
-    void clockInOut ();
-    void breakStartStop ();
+    bool hasClockedIn () const;
+    bool takesBreak () const;
+    bool exceedsDay () const;
+    const QDateTime& clockIn ();
+    const QDateTime& clockOut ();
+    const QDateTime& startBreak ();
+    const QDateTime& finishBreak ();
+    void getWorkingTime (unsigned &hours, unsigned &minutes) const;
+    const QDateTime& getLastEventTime () const;
 
 private:
-    void updateList (const QString& caption, const QDateTime& time);
-    Stechuhr m_wtClock;
+    qint64 getBreakDuration () const;
 
-    Ui::Dialog ui;
-    QTimer* m_updateTimer;
+    enum EventType { CLOCK_IN, CLOCK_OUT, BREAK_START, BREAK_STOP };
+    QList<QPair<EventType, QDateTime>> m_events;
+
 };
 
 #endif

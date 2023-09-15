@@ -80,6 +80,8 @@ set (SOURCES
     ${SOURCE_DIR}/mainDialog.ui
     ${SOURCE_DIR}/maindialog.h
     ${SOURCE_DIR}/maindialog.cpp
+    ${SOURCE_DIR}/stechuhr.h
+    ${SOURCE_DIR}/stechuhr.cpp
 )
 qt_add_executable (stechuhr ${SOURCES})
 
