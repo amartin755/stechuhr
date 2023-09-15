@@ -20,14 +20,12 @@
 #include "maindialog.h"
 
 MainDialog::MainDialog(QWidget *parent)
-    : QDialog(parent), m_timeclockRunning (false), m_break (false), m_displayHours (0), m_displayMinutes (0)
+    : QDialog(parent), m_timeclockRunning (false), m_break (false)
 {
     ui.setupUi (this);
     ui.workingTime->display ("--:--");
     m_updateTimer  = new QTimer (this);
-    m_displayTimer = new QTimer (this);
     connect (m_updateTimer, &QTimer::timeout, this, &MainDialog::calcTime);
-    connect (m_displayTimer, &QTimer::timeout, this, &MainDialog::refreshWorkingTime);
     connect (ui.btnClockInOut, &QPushButton::clicked, this, &MainDialog::clockInOut);
     connect (ui.btnBreak, &QPushButton::clicked, this, &MainDialog::breakStartStop);
 }
@@ -38,7 +36,6 @@ void MainDialog::clockInOut ()
     {
         ui.btnClockInOut->setText (tr("Clock out"));
         m_events.clear ();
-        m_displayTimer->start (1000);
         m_updateTimer->start (1000 * 60);
         m_events.append (QPair<EventType, QDateTime>(CLOCK_IN, QDateTime::currentDateTime ()));
     }
@@ -46,7 +43,6 @@ void MainDialog::clockInOut ()
     {
         ui.btnClockInOut->setText (tr("Clock in"));
         m_updateTimer->stop ();
-        m_displayTimer->stop ();
         if (m_break)
             breakStartStop ();
 
@@ -54,7 +50,6 @@ void MainDialog::clockInOut ()
     }
     m_timeclockRunning = !m_timeclockRunning;
     calcTime ();
-    refreshWorkingTime ();
     updateList ();
 }
 
@@ -66,13 +61,16 @@ void MainDialog::breakStartStop ()
         {
             ui.btnBreak->setText (tr("Stop break"));
             m_events.append (QPair<EventType, QDateTime>(BREAK_START, QDateTime::currentDateTime ()));
+            ui.workingTime->setSegmentStyle (QLCDNumber::Outline);
         }
         else
         {
             ui.btnBreak->setText (tr("Start break"));
             m_events.append (QPair<EventType, QDateTime>(BREAK_STOP, QDateTime::currentDateTime ()));
+            ui.workingTime->setSegmentStyle (QLCDNumber::Flat);
         }
         m_break = !m_break;
+        calcTime ();
         updateList ();
     }
 }
@@ -81,15 +79,19 @@ void MainDialog::calcTime ()
 {
     Q_ASSERT (m_events.count());
 
+    unsigned displayHours = 0, displayMinutes = 0;
     QDateTime currTime = m_events.last().first == BREAK_START ? m_events.last().second : QDateTime::currentDateTime();
     qint64 elapsedSecs = m_events.first().second.secsTo (currTime) - getBreakDuration ();
 
     Q_ASSERT (elapsedSecs >= 0);
 
-    m_displayHours    = elapsedSecs / 3600;
-    m_displayMinutes  = (unsigned)(elapsedSecs - m_displayHours * 3600)/60;
-    m_displayMinutes += elapsedSecs % 60 >= 30 ? 1 : 0;
-}
+    displayHours    = elapsedSecs / 3600;
+    displayMinutes  = (unsigned)(elapsedSecs - displayHours * 3600)/60;
+    displayMinutes += elapsedSecs % 60 >= 30 ? 1 : 0;
+ 
+    QString text = QString ("%1:%2").arg(displayHours, 2, 10, QChar('0')).arg(displayMinutes, 2, 10, QChar('0'));
+    ui.workingTime->display (text);
+ }
 
 qint64 MainDialog::getBreakDuration ()
 {
@@ -111,24 +113,6 @@ qint64 MainDialog::getBreakDuration ()
         }
     }
     return duration;
-}
-
-void MainDialog::refreshWorkingTime ()
-{
-    static bool toggle = false;
-    QString text = QString ("%1:%2").arg(m_displayHours, 2, 10, QChar('0')).arg(m_displayMinutes, 2, 10, QChar('0'));
-    if (!m_break)
-    {
-        if (toggle)
-            text[2] = ' ';
-    }
-    else
-    {
-        if (toggle)
-            text.clear();
-    }
-    ui.workingTime->display (text);
-    toggle = !toggle;
 }
 
 void MainDialog::updateList ()

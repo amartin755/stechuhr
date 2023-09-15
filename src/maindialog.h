@@ -35,7 +35,6 @@ public:
     explicit MainDialog(QWidget *parent = nullptr);
 
 private slots:
-    void refreshWorkingTime ();
     void calcTime ();
     void clockInOut ();
     void breakStartStop ();
@@ -46,13 +45,10 @@ private:
 
     qint64 getBreakDuration ();
     Ui::Dialog ui;
-    QTimer* m_displayTimer;
     QTimer* m_updateTimer;
     bool m_timeclockRunning;
     bool m_break;
     QList<QPair<EventType, QDateTime>> m_events;
-    unsigned m_displayHours;
-    unsigned m_displayMinutes;
 };
 
 #endif
