@@ -14,7 +14,7 @@ set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 
 # compiler settings
 ###############################################################################
-# C++11 is required
+# C++17 is required for QT
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # warning level
@@ -82,7 +82,9 @@ set (SOURCES
     ${SOURCE_DIR}/maindialog.cpp
     ${SOURCE_DIR}/stechuhr.h
     ${SOURCE_DIR}/stechuhr.cpp
+    ${SOURCE_DIR}/stechuhr.qrc
 )
+set(CMAKE_AUTORCC ON)
 qt_add_executable (stechuhr ${SOURCES})
 
 #target_sources (stechuhr PRIVATE ${SOURCES})

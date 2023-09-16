@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="break_end">icons/break-end.svg</file>
+    <file alias="break_start">icons/break.svg</file>
+    <file alias="clock_in">icons/clock-in.svg</file>
+    <file alias="clock_out">icons/clock-out.svg</file>
+  </qresource>
+</RCC>

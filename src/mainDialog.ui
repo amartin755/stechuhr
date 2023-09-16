@@ -42,12 +42,32 @@
          <property name="text">
           <string>Clock in</string>
          </property>
+         <property name="icon">
+          <iconset resource="stechuhr.qrc">
+           <normaloff>:/clock_in</normaloff>:/clock_in</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>48</width>
+           <height>48</height>
+          </size>
+         </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="btnBreak">
          <property name="text">
           <string>Start break</string>
+         </property>
+         <property name="icon">
+          <iconset resource="stechuhr.qrc">
+           <normaloff>:/break_start</normaloff>:/break_start</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>48</width>
+           <height>48</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -56,7 +76,7 @@
      <item>
       <widget class="QTreeWidget" name="treeWidget">
        <property name="columnCount">
-        <number>2</number>
+        <number>3</number>
        </property>
        <attribute name="headerVisible">
         <bool>false</bool>
@@ -71,12 +91,19 @@
          <string notr="true">2</string>
         </property>
        </column>
+       <column>
+        <property name="text">
+         <string notr="true">3</string>
+        </property>
+       </column>
       </widget>
      </item>
     </layout>
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="stechuhr.qrc"/>
+ </resources>
  <connections/>
 </ui>

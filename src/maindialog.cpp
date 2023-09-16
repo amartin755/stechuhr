@@ -36,18 +36,20 @@ void MainDialog::clockInOut ()
     {
         ui.treeWidget->clear();
         m_updateTimer->start (1000 * 60);
-        updateList (tr("Clocked in"), m_wtClock.clockIn ());
+        updateList (":/clock_in", tr("Clocked in"), m_wtClock.clockIn ());
 
         ui.btnClockInOut->setText (tr("Clock out"));
-    }
+        ui.btnClockInOut->setIcon (QIcon(":/clock_out"));
+        }
     else
     {
         m_updateTimer->stop ();
         if (m_wtClock.takesBreak ())
             breakStartStop();
-        updateList (tr("Clocked Out"), m_wtClock.clockOut());
+        updateList (":/clock_out", tr("Clocked Out"), m_wtClock.clockOut());
 
         ui.btnClockInOut->setText (tr("Clock in"));
+        ui.btnClockInOut->setIcon (QIcon(":/clock_in"));
     }
     updateTime ();
 }
@@ -58,17 +60,19 @@ void MainDialog::breakStartStop ()
     {
         if (!m_wtClock.takesBreak ())
         {
-            updateList (tr("Break"), m_wtClock.startBreak());
+            updateList (":/break_start", tr("Break"), m_wtClock.startBreak());
             ui.workingTime->setSegmentStyle (QLCDNumber::Outline);
 
             ui.btnBreak->setText (tr("Stop break"));
+            ui.btnBreak->setIcon (QIcon(":/break_end"));
         }
         else
         {
-            updateList (tr("Break end"), m_wtClock.finishBreak());
+            updateList (":/break_end", tr("Break end"), m_wtClock.finishBreak());
             ui.workingTime->setSegmentStyle (QLCDNumber::Flat);
 
             ui.btnBreak->setText (tr("Start break"));
+            ui.btnBreak->setIcon (QIcon(":/break_start"));
         }
         updateTime ();
     }
@@ -83,11 +87,12 @@ void MainDialog::updateTime ()
     ui.workingTime->display (text);
 }
 
-void MainDialog::updateList (const QString& caption, const QDateTime& time)
+void MainDialog::updateList (const QString& iconPath, const QString& caption, const QDateTime& time)
 {
     bool multipleDays = m_wtClock.exceedsDay ();
     QTreeWidgetItem* i = new QTreeWidgetItem (ui.treeWidget);
-    i->setText (0, multipleDays ? QLocale::system().toString(time, QLocale::ShortFormat) : time.toString ("hh:mm:ss"));
-    i->setText (1, caption);
+    i->setText (1, multipleDays ? QLocale::system().toString(time, QLocale::ShortFormat) : time.toString ("hh:mm:ss"));
+    i->setText (2, caption);
+    i->setIcon (0, QIcon (iconPath));
     ui.treeWidget->resizeColumnToContents (0);
 }

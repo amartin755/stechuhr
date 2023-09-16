@@ -41,7 +41,7 @@ private slots:
     void breakStartStop ();
 
 private:
-    void updateList (const QString& caption, const QDateTime& time);
+    void updateList (const QString& iconPath, const QString& caption, const QDateTime& time);
     Stechuhr m_wtClock;
 
     Ui::Dialog ui;
