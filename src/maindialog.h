@@ -36,7 +36,7 @@ public:
     explicit MainDialog(QWidget *parent = nullptr);
 
 private slots:
-    void calcTime ();
+    void updateTime ();
     void clockInOut ();
     void breakStartStop ();
 

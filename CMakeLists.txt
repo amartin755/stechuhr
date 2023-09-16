@@ -72,7 +72,7 @@ message (STATUS "  git branch = ${GIT_BRANCH}")
 message (STATUS "  git commit = ${GIT_COMMIT}")
 
 
-# target dnscache (main library)
+# main target
 ###############################################################################
 set (SOURCE_DIR src)
 set (SOURCES

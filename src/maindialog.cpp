@@ -25,7 +25,7 @@ MainDialog::MainDialog(QWidget *parent)
     ui.setupUi (this);
     ui.workingTime->display ("--:--");
     m_updateTimer  = new QTimer (this);
-    connect (m_updateTimer, &QTimer::timeout, this, &MainDialog::calcTime);
+    connect (m_updateTimer, &QTimer::timeout, this, &MainDialog::updateTime);
     connect (ui.btnClockInOut, &QPushButton::clicked, this, &MainDialog::clockInOut);
     connect (ui.btnBreak, &QPushButton::clicked, this, &MainDialog::breakStartStop);
 }
@@ -49,7 +49,7 @@ void MainDialog::clockInOut ()
 
         ui.btnClockInOut->setText (tr("Clock in"));
     }
-    calcTime ();
+    updateTime ();
 }
 
 void MainDialog::breakStartStop ()
@@ -70,11 +70,11 @@ void MainDialog::breakStartStop ()
 
             ui.btnBreak->setText (tr("Start break"));
         }
-        calcTime ();
+        updateTime ();
     }
 }
 
-void MainDialog::calcTime ()
+void MainDialog::updateTime ()
 {
     unsigned displayHours = 0, displayMinutes = 0;
     m_wtClock.getWorkingTime (displayHours, displayMinutes);
