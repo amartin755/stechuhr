@@ -20,7 +20,7 @@
 #include "maindialog.h"
 
 MainDialog::MainDialog(QWidget *parent)
-    : QDialog(parent)
+    : QDialog(parent), CLOCK_IN (tr("Clock in")), CLOCK_OUT (tr("Clock out")), BREAK (tr("Start break")), BREAK_END (tr("Finish break"))
 {
     ui.setupUi (this);
     ui.workingTime->display ("--:--");
@@ -36,20 +36,20 @@ void MainDialog::clockInOut ()
     {
         ui.treeWidget->clear();
         m_updateTimer->start (1000 * 60);
-        updateList (":/clock_in", tr("Clocked in"), m_wtClock.clockIn ());
+        updateList (":/icon_clock_in", CLOCK_IN, m_wtClock.clockIn ());
 
-        ui.btnClockInOut->setText (tr("Clock out"));
-        ui.btnClockInOut->setIcon (QIcon(":/clock_out"));
+        ui.btnClockInOut->setText (CLOCK_OUT);
+        ui.btnClockInOut->setIcon (QIcon(":/icon_clock_out"));
         }
     else
     {
         m_updateTimer->stop ();
         if (m_wtClock.takesBreak ())
             breakStartStop();
-        updateList (":/clock_out", tr("Clocked Out"), m_wtClock.clockOut());
+        updateList (":/icon_clock_out", CLOCK_OUT, m_wtClock.clockOut());
 
-        ui.btnClockInOut->setText (tr("Clock in"));
-        ui.btnClockInOut->setIcon (QIcon(":/clock_in"));
+        ui.btnClockInOut->setText (CLOCK_IN);
+        ui.btnClockInOut->setIcon (QIcon(":/icon_clock_in"));
     }
     updateTime ();
 }
@@ -60,19 +60,19 @@ void MainDialog::breakStartStop ()
     {
         if (!m_wtClock.takesBreak ())
         {
-            updateList (":/break_start", tr("Break"), m_wtClock.startBreak());
+            updateList (":/icon_break_start", BREAK, m_wtClock.startBreak());
             ui.workingTime->setSegmentStyle (QLCDNumber::Outline);
 
-            ui.btnBreak->setText (tr("Stop break"));
-            ui.btnBreak->setIcon (QIcon(":/break_end"));
+            ui.btnBreak->setText (BREAK_END);
+            ui.btnBreak->setIcon (QIcon(":/icon_break_end"));
         }
         else
         {
-            updateList (":/break_end", tr("Break end"), m_wtClock.finishBreak());
+            updateList (":/icon_break_end", BREAK_END, m_wtClock.finishBreak());
             ui.workingTime->setSegmentStyle (QLCDNumber::Flat);
 
-            ui.btnBreak->setText (tr("Start break"));
-            ui.btnBreak->setIcon (QIcon(":/break_start"));
+            ui.btnBreak->setText (BREAK);
+            ui.btnBreak->setIcon (QIcon(":/icon_break_start"));
         }
         updateTime ();
     }

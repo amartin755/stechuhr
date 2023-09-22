@@ -1,5 +1,5 @@
 ###############################################################################
-cmake_minimum_required (VERSION 3.16)
+cmake_minimum_required (VERSION 3.18)
 
 project (Stechuhr VERSION 0.0.1
                  DESCRIPTION "A time tracking utility"
@@ -22,7 +22,7 @@ add_compile_options (-Wall -Wextra -Wpedantic -fstack-protector-all)
 
 # check dependencies
 ###############################################################################
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools)
 qt_standard_project_setup()
 
 # preprocessor definitions
@@ -75,6 +75,7 @@ message (STATUS "  git commit = ${GIT_COMMIT}")
 # main target
 ###############################################################################
 set (SOURCE_DIR src)
+set (TS_DIR ${SOURCE_DIR}/I10n)
 set (SOURCES
     ${SOURCE_DIR}/main.cpp
     ${SOURCE_DIR}/mainDialog.ui
@@ -86,8 +87,9 @@ set (SOURCES
 )
 set(CMAKE_AUTORCC ON)
 qt_add_executable (stechuhr ${SOURCES})
+qt_add_translations(stechuhr
+    TS_FILES ${TS_DIR}/stechuhr_de.ts)
 
-#target_sources (stechuhr PRIVATE ${SOURCES})
 target_include_directories (stechuhr
     PRIVATE ${SOURCE_DIR})
 target_link_libraries(stechuhr PRIVATE Qt6::Widgets)

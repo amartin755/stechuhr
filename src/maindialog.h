@@ -46,6 +46,10 @@ private:
 
     Ui::Dialog ui;
     QTimer* m_updateTimer;
+    const QString CLOCK_IN;
+    const QString CLOCK_OUT;
+    const QString BREAK;
+    const QString BREAK_END;
 };
 
 #endif

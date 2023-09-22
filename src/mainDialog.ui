@@ -44,7 +44,7 @@
          </property>
          <property name="icon">
           <iconset resource="stechuhr.qrc">
-           <normaloff>:/clock_in</normaloff>:/clock_in</iconset>
+           <normaloff>:/icon_clock_in</normaloff>:/icon_clock_in</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -61,7 +61,7 @@
          </property>
          <property name="icon">
           <iconset resource="stechuhr.qrc">
-           <normaloff>:/break_start</normaloff>:/break_start</iconset>
+           <normaloff>:/icon_clock_out</normaloff>:/icon_clock_out</iconset>
          </property>
          <property name="iconSize">
           <size>

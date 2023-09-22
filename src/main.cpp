@@ -17,12 +17,20 @@
  */
 
 #include <QApplication>
+#include <QTranslator>
 
 #include "maindialog.h"
+
+using namespace Qt::StringLiterals;
 
 int main (int argc, char** argv)
 {
     QApplication app(argc, argv);
+    auto locale = QLocale::system();
+    QTranslator translator;
+
+    if (translator.load(QLocale(), "stechuhr"_L1, "_"_L1, ":/i18n"_L1))
+        app.installTranslator(&translator);   
     MainDialog dlg;
     dlg.show();
     return app.exec();
