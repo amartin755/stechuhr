@@ -74,17 +74,18 @@ void Stechuhr::getWorkingTime (unsigned &hours, unsigned &minutes) const
 {
     hours = 0;
     minutes = 0;
-    if (hasClockedIn ())
-    {
-        QDateTime currTime = takesBreak () ? m_events.last().second : QDateTime::currentDateTime();
-        qint64 elapsedSecs = m_events.first().second.secsTo (currTime) - getBreakDuration ();
+    bool round = !hasClockedIn (); // round when work is finished
 
-        Q_ASSERT (elapsedSecs >= 0);
+    QDateTime currTime = takesBreak () ? m_events.last().second : QDateTime::currentDateTime();
+    qint64 elapsedSecs = m_events.first().second.secsTo (currTime) - getBreakDuration ();
 
-        hours    = elapsedSecs / 3600;
-        minutes  = (unsigned)(elapsedSecs - hours * 3600)/60;
-        minutes += elapsedSecs % 60 >= 30 ? 1 : 0;
-    }
+    Q_ASSERT (elapsedSecs >= 0);
+
+    if (round && elapsedSecs % 60 >= 30)
+        elapsedSecs += 60 - elapsedSecs % 60; // round up to next minute
+
+    hours    = elapsedSecs / 3600;
+    minutes  = (unsigned)(elapsedSecs - hours * 3600)/60;
 }
 
 const QDateTime& Stechuhr::getLastEventTime () const
