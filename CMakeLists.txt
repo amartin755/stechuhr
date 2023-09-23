@@ -18,7 +18,11 @@ set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # warning level
-add_compile_options (-Wall -Wextra -Wpedantic -fstack-protector-all)
+if (MSVC)
+    add_compile_options (/W3)
+else()
+    add_compile_options (-Wall -Wextra -Wpedantic -fstack-protector-all)
+endif()
 
 # check dependencies
 ###############################################################################
@@ -99,3 +103,15 @@ set_target_properties(stechuhr PROPERTIES
     MACOSX_BUNDLE ON
 )
 
+# deploy target
+###############################################################################
+install(TARGETS stechuhr
+    BUNDLE  DESTINATION .
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+qt_generate_deploy_app_script(
+    TARGET stechuhr
+    OUTPUT_SCRIPT deploy_script
+    NO_UNSUPPORTED_PLATFORM_ERROR
+)
+install(SCRIPT ${deploy_script})
