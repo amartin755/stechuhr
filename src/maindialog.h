@@ -42,6 +42,7 @@ private slots:
 
 private:
     void updateList (const QString& iconPath, const QString& caption, const QDateTime& time);
+    void keyPressEvent(QKeyEvent *e);
     Stechuhr m_wtClock;
 
     Ui::Dialog ui;

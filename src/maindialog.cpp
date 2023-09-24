@@ -17,6 +17,7 @@
  */
 
 #include <QtGlobal>
+#include <QKeyEvent>
 #include "maindialog.h"
 
 MainDialog::MainDialog(QWidget *parent)
@@ -95,4 +96,10 @@ void MainDialog::updateList (const QString& iconPath, const QString& caption, co
     i->setText (2, caption);
     i->setIcon (0, QIcon (iconPath));
     ui.treeWidget->resizeColumnToContents (0);
+}
+
+void MainDialog::keyPressEvent(QKeyEvent *e)
+{
+    if(e->key() != Qt::Key_Escape)
+        QDialog::keyPressEvent(e);
 }
