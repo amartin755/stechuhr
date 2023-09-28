@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Stechuhr</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="stechuhr.qrc">
+    <normaloff>:/icon_main</normaloff>:/icon_main</iconset>
+  </property>
   <property name="locale">
    <locale language="English" country="Europe"/>
   </property>

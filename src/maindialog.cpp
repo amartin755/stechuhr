@@ -25,6 +25,7 @@ MainDialog::MainDialog(QWidget *parent)
 {
     ui.setupUi (this);
     ui.workingTime->display ("--:--");
+    this->setWindowIcon (QIcon(":/icon_main"));
     m_updateTimer  = new QTimer (this);
     connect (m_updateTimer, &QTimer::timeout, this, &MainDialog::updateTime);
     connect (ui.btnClockInOut, &QPushButton::clicked, this, &MainDialog::clockInOut);

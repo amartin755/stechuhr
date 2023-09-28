@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="/">
+    <file>icons/stechuhr.ico</file>
+    <file alias="icon_main">icons/stechuhr.svg</file>
     <file alias="icon_break_end">icons/break-end.svg</file>
     <file alias="icon_break_start">icons/break.svg</file>
     <file alias="icon_clock_in">icons/clock-in.svg</file>
