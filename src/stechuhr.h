@@ -20,31 +20,51 @@
 #ifndef STECHUHR_H
 #define STECHUHR_H
 
+#include <QObject>
 #include <QDateTime>
 #include <QList>
 #include <QPair>
 
-class Stechuhr
+class Stechuhr : public QObject
 {
+    Q_OBJECT
+
 public:
-    Stechuhr ();
+    explicit Stechuhr (QObject *parent = nullptr);
 
     bool hasClockedIn () const;
     bool takesBreak () const;
     bool exceedsDay () const;
-    const QDateTime& clockIn ();
-    const QDateTime& clockOut ();
-    const QDateTime& startBreak ();
-    const QDateTime& finishBreak ();
+    void clockIn ();
+    void clockOut (const QDateTime* time = nullptr);
+    void startBreak ();
+    void finishBreak (const QDateTime* time = nullptr);
     void getWorkingTime (unsigned &hours, unsigned &minutes) const;
-    const QDateTime& getLastEventTime () const;
+
+    void saveState ();
+    bool isSavedSessionAvailable(QDateTime& savedAt) const;
+    void loadSession ();
+    void removeSession ();
+
+signals:
+    void clockedIn (const QDateTime&);
+    void clockedOut (const QDateTime&);
+    void breakStarted (const QDateTime&);
+    void breakFinished (const QDateTime&);
 
 private:
-    qint64 getBreakDuration () const;
-
     enum EventType { CLOCK_IN, CLOCK_OUT, BREAK_START, BREAK_STOP };
+    void handleEvent (EventType type, const QDateTime* time = nullptr, bool emitSignal = true);
+    qint64 getBreakDuration () const;
+    void saveSession () const;
+
     QList<QPair<EventType, QDateTime>> m_events;
 
+    const QString KEY_GROUP_SESSION = "last-session";
+    const QString KEY_EVENTS = "events";
+    const QString KEY_EVENTS_EVENT = "event";
+    const QString KEY_EVENTS_TIME = "time";
+    const QString KEY_TERM = "terminated";
 };
 
 #endif

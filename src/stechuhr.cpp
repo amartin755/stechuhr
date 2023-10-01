@@ -17,11 +17,11 @@
  */
 
 #include <QtGlobal>
+#include <QSettings>
 #include "stechuhr.h"
 
-Stechuhr::Stechuhr ()
+Stechuhr::Stechuhr (QObject *parent) : QObject (parent)
 {
-
 }
 
 bool Stechuhr::hasClockedIn () const
@@ -39,35 +39,59 @@ bool Stechuhr::exceedsDay () const
     return !m_events.isEmpty() && (m_events.first().second.date() != m_events.last().second.date());
 }
 
-const QDateTime& Stechuhr::clockIn ()
+void Stechuhr::clockIn ()
 {
     m_events.clear ();
-    m_events.append (QPair<EventType, QDateTime>(CLOCK_IN, QDateTime::currentDateTime ()));
-    return getLastEventTime();
+    handleEvent (CLOCK_IN);
+    saveSession ();
 }
 
-const QDateTime& Stechuhr::clockOut ()
+void Stechuhr::clockOut (const QDateTime* time)
 {
     Q_ASSERT (hasClockedIn());
     if (takesBreak ())
-        finishBreak ();
-    m_events.append (QPair<EventType, QDateTime>(CLOCK_OUT, QDateTime::currentDateTime ()));
-    return getLastEventTime();
+        finishBreak (time);
+    handleEvent (CLOCK_OUT, time);
+    saveSession ();
 }
 
-const QDateTime& Stechuhr::startBreak ()
+void Stechuhr::startBreak ()
 {
     Q_ASSERT (hasClockedIn());
     Q_ASSERT (!takesBreak());
-    m_events.append (QPair<EventType, QDateTime>(BREAK_START, QDateTime::currentDateTime ()));
-    return getLastEventTime();
+    handleEvent (BREAK_START);
+    saveSession ();
 }
 
-const QDateTime& Stechuhr::finishBreak ()
+void Stechuhr::finishBreak (const QDateTime* time)
 {
     Q_ASSERT (takesBreak());
-    m_events.append (QPair<EventType, QDateTime>(BREAK_STOP, QDateTime::currentDateTime ()));
-    return getLastEventTime();
+    handleEvent (BREAK_STOP, time);
+    saveSession ();
+}
+
+void Stechuhr::handleEvent (EventType type, const QDateTime* t, bool emitSignal)
+{
+    QDateTime time = t == nullptr ? QDateTime::currentDateTime () : *t;
+    m_events.append (QPair<EventType, QDateTime>(type, time));
+    if (emitSignal)
+    {
+        switch (type)
+        {
+            case Stechuhr::CLOCK_IN:
+                emit clockedIn (time);
+                break;
+            case Stechuhr::CLOCK_OUT:
+                emit clockedOut (time);
+                break;
+            case Stechuhr::BREAK_START:
+                emit breakStarted (time);
+                break;
+            case Stechuhr::BREAK_STOP:
+                emit breakFinished (time);
+                break;
+        }
+    }
 }
 
 void Stechuhr::getWorkingTime (unsigned &hours, unsigned &minutes) const
@@ -86,11 +110,6 @@ void Stechuhr::getWorkingTime (unsigned &hours, unsigned &minutes) const
 
     hours    = elapsedSecs / 3600;
     minutes  = (unsigned)(elapsedSecs - hours * 3600)/60;
-}
-
-const QDateTime& Stechuhr::getLastEventTime () const
-{
-    return m_events.last().second;
 }
 
 qint64 Stechuhr::getBreakDuration () const
@@ -114,3 +133,90 @@ qint64 Stechuhr::getBreakDuration () const
     }
     return duration;
 }
+
+void Stechuhr::saveState ()
+{
+    if (hasClockedIn ())
+    {
+        QSettings s;
+
+        s.beginGroup (KEY_GROUP_SESSION);
+        s.setValue (KEY_TERM, QDateTime::currentDateTime ());
+        s.endGroup ();
+    }
+}
+
+bool Stechuhr::isSavedSessionAvailable (QDateTime& savedAt) const
+{
+    QSettings s;
+    Q_ASSERT (s.status() == QSettings::NoError);
+
+    s.beginGroup (KEY_GROUP_SESSION);
+    savedAt = s.value (KEY_TERM).toDateTime();
+    int size = s.beginReadArray (KEY_EVENTS);
+    if (size == 0)
+        return false;
+
+    s.setArrayIndex (0);
+    if (s.value (KEY_EVENTS_EVENT) != EventType::CLOCK_IN)
+        return false;
+
+    s.setArrayIndex (size - 1);
+    return s.value (KEY_EVENTS_EVENT) != EventType::CLOCK_OUT;
+}
+
+void Stechuhr::saveSession () const
+{
+    QSettings s;
+    Q_ASSERT (s.status() == QSettings::NoError);
+
+    s.beginGroup (KEY_GROUP_SESSION);
+    s.remove (KEY_TERM);
+    s.beginWriteArray (KEY_EVENTS);
+    s.remove ("");
+
+    int n = 0;
+    for (const QPair<EventType, QDateTime>& item : m_events)
+    {
+        s.setArrayIndex (n++);
+        s.setValue (KEY_EVENTS_EVENT, item.first);
+        s.setValue (KEY_EVENTS_TIME,  item.second);
+    }
+    s.endArray ();
+    s.endGroup ();
+}
+
+void Stechuhr::loadSession ()
+{
+    QSettings s;
+    if (s.status() == QSettings::NoError)
+    {
+        m_events.clear ();
+        s.beginGroup (KEY_GROUP_SESSION);
+        int size = s.beginReadArray (KEY_EVENTS);
+
+        for (int n = 0; n < size; n++)
+        {
+            s.setArrayIndex (n);
+            QDateTime time = s.value(KEY_EVENTS_TIME).toDateTime();
+            handleEvent ((EventType)s.value(KEY_EVENTS_EVENT).toInt(), &time);
+//            m_events.append (QPair<EventType, QDateTime>(
+//                (EventType)s.value(KEY_EVENTS_EVENT).toInt(), s.value(KEY_EVENTS_TIME).toDateTime()));
+        }
+        s.endArray ();
+        s.endGroup ();
+    }
+}
+
+void Stechuhr::removeSession ()
+{
+    QSettings s;
+    Q_ASSERT (s.status() == QSettings::NoError);
+    s.beginGroup (KEY_GROUP_SESSION);
+    s.remove (KEY_TERM);
+    s.beginWriteArray (KEY_EVENTS);
+    s.remove ("");
+    s.endArray ();
+    s.endGroup ();
+    m_events.clear ();
+ }

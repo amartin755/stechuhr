@@ -24,6 +24,7 @@
 #include <QDateTime>
 #include <QList>
 #include <QPair>
+#include <QApplication>
 
 #include "ui_mainDialog.h"
 #include "stechuhr.h"
@@ -33,16 +34,23 @@ class MainDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit MainDialog(QWidget *parent = nullptr);
+    explicit MainDialog(QApplication* theApp, QWidget *parent = nullptr);
 
 private slots:
     void updateTime ();
     void clockInOut ();
     void breakStartStop ();
+    void saveState ();
+
+    void onClockedIn (const QDateTime&);
+    void onClockedOut (const QDateTime&);
+    void onBreakStarted (const QDateTime&);
+    void onBreakFinished (const QDateTime&);
 
 private:
     void updateList (const QString& iconPath, const QString& caption, const QDateTime& time);
-    void keyPressEvent(QKeyEvent *e);
+    void updateClockBreakButtons ();
+    void keyPressEvent (QKeyEvent *e);
     Stechuhr m_wtClock;
 
     Ui::Dialog ui;
@@ -51,6 +59,10 @@ private:
     const QString CLOCK_OUT;
     const QString BREAK;
     const QString BREAK_END;
+    const QString ICON_CLOCK_IN;
+    const QString ICON_CLOCK_OUT;
+    const QString ICON_BREAK;
+    const QString ICON_BREAK_END;
 };
 
 #endif
