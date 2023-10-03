@@ -19,7 +19,7 @@
 #include <QtGlobal>
 #include <QKeyEvent>
 #include <QMessageBox>
-#include <QSettings>
+#include <QtLogging>
 #include "maindialog.h"
 
 MainDialog::MainDialog(QApplication* theApp, QWidget *parent)
@@ -147,7 +147,7 @@ void MainDialog::keyPressEvent (QKeyEvent *e)
 void MainDialog::saveState ()
 {
     m_wtClock.saveState ();
-    qWarning() << "time to say goodby";
+    qInfo() << "time to say goodby";
 }
 
 void MainDialog::onClockedIn (const QDateTime& time)

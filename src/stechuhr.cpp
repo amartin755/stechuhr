@@ -18,6 +18,7 @@
 
 #include <QtGlobal>
 #include <QSettings>
+#include <QtLogging>
 #include "stechuhr.h"
 
 Stechuhr::Stechuhr (QObject *parent) : QObject (parent)
@@ -100,7 +101,7 @@ void Stechuhr::getWorkingTime (unsigned &hours, unsigned &minutes) const
     minutes = 0;
     if (m_events.size () == 0)
         return;
-        
+
     bool clockedIn = hasClockedIn ();
     bool round = !clockedIn; // round when work is finished
 
@@ -153,7 +154,11 @@ void Stechuhr::saveState ()
 bool Stechuhr::isSavedSessionAvailable (QDateTime& savedAt) const
 {
     QSettings s;
-    Q_ASSERT (s.status() == QSettings::NoError);
+    if (s.status() != QSettings::NoError)
+    {
+        qWarning() << "Could not read stored session.";
+        return false;
+    }
 
     s.beginGroup (KEY_GROUP_SESSION);
     savedAt = s.value (KEY_TERM).toDateTime();
@@ -172,7 +177,11 @@ bool Stechuhr::isSavedSessionAvailable (QDateTime& savedAt) const
 void Stechuhr::saveSession () const
 {
     QSettings s;
-    Q_ASSERT (s.status() == QSettings::NoError);
+    if (s.status() != QSettings::NoError)
+    {
+        qCritical() << "Could not store session.";
+        return;
+    }
 
     s.beginGroup (KEY_GROUP_SESSION);
     s.remove (KEY_TERM);
@@ -193,29 +202,34 @@ void Stechuhr::saveSession () const
 void Stechuhr::loadSession ()
 {
     QSettings s;
-    if (s.status() == QSettings::NoError)
+    if (s.status() != QSettings::NoError)
     {
-        m_events.clear ();
-        s.beginGroup (KEY_GROUP_SESSION);
-        int size = s.beginReadArray (KEY_EVENTS);
-
-        for (int n = 0; n < size; n++)
-        {
-            s.setArrayIndex (n);
-            QDateTime time = s.value(KEY_EVENTS_TIME).toDateTime();
-            handleEvent ((EventType)s.value(KEY_EVENTS_EVENT).toInt(), &time);
-//            m_events.append (QPair<EventType, QDateTime>(
-//                (EventType)s.value(KEY_EVENTS_EVENT).toInt(), s.value(KEY_EVENTS_TIME).toDateTime()));
-        }
-        s.endArray ();
-        s.endGroup ();
+        qWarning() << "Could not read stored session.";
+        return;
     }
+
+    m_events.clear ();
+    s.beginGroup (KEY_GROUP_SESSION);
+    int size = s.beginReadArray (KEY_EVENTS);
+
+    for (int n = 0; n < size; n++)
+    {
+        s.setArrayIndex (n);
+        QDateTime time = s.value(KEY_EVENTS_TIME).toDateTime();
+        handleEvent ((EventType)s.value(KEY_EVENTS_EVENT).toInt(), &time);
+    }
+    s.endArray ();
+    s.endGroup ();
 }
 
 void Stechuhr::removeSession ()
 {
     QSettings s;
-    Q_ASSERT (s.status() == QSettings::NoError);
+    if (s.status() != QSettings::NoError)
+    {
+        qCritical() << "Could not clear stored session.";
+        return;
+    }
     s.beginGroup (KEY_GROUP_SESSION);
     s.remove (KEY_TERM);
     s.beginWriteArray (KEY_EVENTS);
