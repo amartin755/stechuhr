@@ -41,6 +41,12 @@ MainDialog::MainDialog(QApplication* theApp, QWidget *parent)
     connect (&m_wtClock, &Stechuhr::clockedOut, this, &MainDialog::onClockedOut);
     connect (&m_wtClock, &Stechuhr::breakStarted, this, &MainDialog::onBreakStarted);
     connect (&m_wtClock, &Stechuhr::breakFinished, this, &MainDialog::onBreakFinished);
+    connect (ui.btnAbout, &QPushButton::clicked, this, &MainDialog::showAbout);
+    connect (ui.btnUndo, &QPushButton::clicked, this, &MainDialog::undo);
+
+    // not implemented yes -> hide
+    ui.btnReport->setVisible (false);
+    ui.btnSettings->setVisible (false);
 
     /**
      * Handle unfinished sessions. There are two cases
@@ -85,10 +91,6 @@ MainDialog::MainDialog(QApplication* theApp, QWidget *parent)
             {
                 m_wtClock.clockOut (&savedAt);
             }
-            if (m_wtClock.hasClockedIn ())
-            {
-                m_updateTimer->start (1000 * 60);
-            }
         }
     }
 }
@@ -98,12 +100,10 @@ void MainDialog::clockInOut ()
     if (!m_wtClock.hasClockedIn ())
     {
         ui.treeWidget->clear();
-        m_updateTimer->start (1000 * 60);
         m_wtClock.clockIn ();
     }
     else
     {
-        m_updateTimer->stop ();
         m_wtClock.clockOut();
     }
 }
@@ -142,6 +142,23 @@ void MainDialog::updateList (const QString& iconPath, const QString& caption, co
     ui.treeWidget->resizeColumnToContents (0);
 }
 
+void MainDialog::setupTimer ()
+{
+    bool running = m_updateTimer->isActive();
+    if (m_wtClock.hasClockedIn ())
+    {
+        if (!running)
+            m_updateTimer->start (1000 * 60);
+    }
+    else
+    {
+        if (running)
+            m_updateTimer->stop ();
+    }
+    if (running != m_updateTimer->isActive())
+        qInfo() << "Update timer set to: " << m_updateTimer->isActive();
+}
+
 void MainDialog::keyPressEvent (QKeyEvent *e)
 {
     if (e->key () != Qt::Key_Escape)
@@ -157,34 +174,34 @@ void MainDialog::saveState ()
 void MainDialog::onClockedIn (const QDateTime& time)
 {
     updateList (ICON_CLOCK_IN, CLOCK_IN, time);
-    updateClockBreakButtons ();
+    updateWidgetStyles ();
     updateTime ();
+    setupTimer ();
 }
 
 void MainDialog::onClockedOut (const QDateTime& time)
 {
     updateList (ICON_CLOCK_OUT, CLOCK_OUT, time);
-    updateClockBreakButtons ();
+    updateWidgetStyles ();
     updateTime ();
+    setupTimer ();
 }
 
 void MainDialog::onBreakStarted (const QDateTime& time)
 {
     updateList (ICON_BREAK, BREAK, time);
-    updateClockBreakButtons ();
-    ui.workingTime->setSegmentStyle (QLCDNumber::Outline);
+    updateWidgetStyles ();
     updateTime ();
 }
 
 void MainDialog::onBreakFinished (const QDateTime& time)
 {
     updateList (ICON_BREAK_END, BREAK_END, time);
-    updateClockBreakButtons ();
-    ui.workingTime->setSegmentStyle (QLCDNumber::Flat);
+    updateWidgetStyles ();
     updateTime ();
 }
 
-void MainDialog::updateClockBreakButtons ()
+void MainDialog::updateWidgetStyles ()
 {
     if (m_wtClock.hasClockedIn ())
     {
@@ -200,10 +217,50 @@ void MainDialog::updateClockBreakButtons ()
     {
         ui.btnBreak->setText (BREAK_END);
         ui.btnBreak->setIcon (QIcon(ICON_BREAK_END));
+        ui.workingTime->setSegmentStyle (QLCDNumber::Outline);
     }
     else
     {
         ui.btnBreak->setText (BREAK);
         ui.btnBreak->setIcon (QIcon(ICON_BREAK));
+        ui.workingTime->setSegmentStyle (QLCDNumber::Flat);
     }
+}
+
+void MainDialog::undo ()
+{
+    m_wtClock.undo ();
+    int size = ui.treeWidget->topLevelItemCount();
+    if (size > 0)
+    {
+        delete ui.treeWidget->takeTopLevelItem (size - 1);
+        updateWidgetStyles ();
+        updateTime ();
+        setupTimer ();
+        if (size == 1)
+            ui.workingTime->display ("--:--");
+    }
+}
+
+void MainDialog::showAbout()
+{
+    QMessageBox::about(this, tr("About Stechuhr"), tr(
+    "<H2><b>Stechuhr</b></H2>"
+    "Version %1<br><br>"
+
+    "A working time tracking utility.<br>"
+    "<a href=https://github.com/amartin755/stechuhr>"
+    "https://github.com/amartin755/stechuhr</a><br><br>"
+
+    "Copyright (C) 2023 Andreas Martin<br><br>"
+
+    "This program is covered by the GNU General Public License, version 3 (GPLv3),"
+    "<a href=http://www.gnu.org/licenses>http://www.gnu.org/licenses</a><br>"
+    "It uses the 3rd party components, covered by their respective license:<br><br>"
+
+    "QT [v%2] (<a href=http://qt.io>http://qt.io</a>)<br>"
+    "Breezy icons (<a href=https://github.com/KDE/breeze-icons>https://github.com/KDE/breeze-icons></a>)"
+    )
+    .arg (APP_VERSION)
+    .arg (QT_VERSION_STR));
 }

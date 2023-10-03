@@ -41,6 +41,7 @@ public:
     void finishBreak (const QDateTime* time = nullptr);
     void getWorkingTime (unsigned &hours, unsigned &minutes) const;
 
+    void undo ();
     void saveState ();
     bool isSavedSessionAvailable(QDateTime& savedAt) const;
     void loadSession ();

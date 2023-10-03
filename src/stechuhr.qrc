@@ -1,5 +1,9 @@
 <RCC>
   <qresource prefix="/">
+    <file>icons/edit-undo.svg</file>
+    <file>icons/help-about.svg</file>
+    <file>icons/labplot-editvlayout.svg</file>
+    <file>icons/systemsettings.svg</file>
     <file>icons/stechuhr.ico</file>
     <file alias="icon_main">icons/stechuhr.svg</file>
     <file alias="icon_break_end">icons/break-end.svg</file>

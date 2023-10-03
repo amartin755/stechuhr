@@ -46,10 +46,13 @@ private slots:
     void onClockedOut (const QDateTime&);
     void onBreakStarted (const QDateTime&);
     void onBreakFinished (const QDateTime&);
+    void showAbout ();
+    void undo ();
 
 private:
     void updateList (const QString& iconPath, const QString& caption, const QDateTime& time);
-    void updateClockBreakButtons ();
+    void updateWidgetStyles ();
+    void setupTimer ();
     void keyPressEvent (QKeyEvent *e);
     Stechuhr m_wtClock;
 

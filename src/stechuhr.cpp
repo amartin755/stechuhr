@@ -139,6 +139,12 @@ qint64 Stechuhr::getBreakDuration () const
     return duration;
 }
 
+void Stechuhr::undo ()
+{
+    m_events.removeLast ();
+    saveSession ();
+}
+
 void Stechuhr::saveState ()
 {
     if (hasClockedIn ())
