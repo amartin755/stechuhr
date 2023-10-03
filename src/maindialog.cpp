@@ -85,6 +85,10 @@ MainDialog::MainDialog(QApplication* theApp, QWidget *parent)
             {
                 m_wtClock.clockOut (&savedAt);
             }
+            if (m_wtClock.hasClockedIn ())
+            {
+                m_updateTimer->start (1000 * 60);
+            }
         }
     }
 }
