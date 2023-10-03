@@ -131,7 +131,7 @@
           </sizepolicy>
          </property>
          <property name="toolTip">
-          <string>About</string>
+          <string>About Stechuhr</string>
          </property>
          <property name="text">
           <string/>
