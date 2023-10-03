@@ -98,9 +98,13 @@ void Stechuhr::getWorkingTime (unsigned &hours, unsigned &minutes) const
 {
     hours = 0;
     minutes = 0;
-    bool round = !hasClockedIn (); // round when work is finished
+    if (m_events.size () == 0)
+        return;
+        
+    bool clockedIn = hasClockedIn ();
+    bool round = !clockedIn; // round when work is finished
 
-    QDateTime currTime = takesBreak () ? m_events.last().second : QDateTime::currentDateTime();
+    QDateTime currTime = takesBreak () || clockedIn ? m_events.last().second : QDateTime::currentDateTime();
     qint64 elapsedSecs = m_events.first().second.secsTo (currTime) - getBreakDuration ();
 
     Q_ASSERT (elapsedSecs >= 0);
