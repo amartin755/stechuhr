@@ -246,7 +246,7 @@ void MainDialog::showAbout()
 {
     QMessageBox::about(this, tr("About Stechuhr"), tr(
     "<H2><b>Stechuhr</b></H2>"
-    "Version %1<br><br>"
+    "Version %1 (%2)<br><br>"
 
     "A working time tracking utility.<br>"
     "<a href=https://github.com/amartin755/stechuhr>"
@@ -258,9 +258,15 @@ void MainDialog::showAbout()
     "<a href=http://www.gnu.org/licenses>http://www.gnu.org/licenses</a><br>"
     "It uses the 3rd party components, covered by their respective license:<br><br>"
 
-    "QT [v%2] (<a href=http://qt.io>http://qt.io</a>)<br>"
+    "QT [v%3] (<a href=http://qt.io>http://qt.io</a>)<br>"
     "Breezy icons (<a href=https://github.com/KDE/breeze-icons>https://github.com/KDE/breeze-icons></a>)"
+
+    "<br><br>Build:<br>%4-%5 (%6)"
     )
     .arg (APP_VERSION)
-    .arg (QT_VERSION_STR));
+    .arg (BUILD_TIME)
+    .arg (QT_VERSION_STR)
+    .arg (GIT_BRANCH)
+    .arg (GIT_COMMIT)
+    .arg (BUILD_TYPE));
 }
