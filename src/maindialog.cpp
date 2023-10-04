@@ -27,6 +27,7 @@ MainDialog::MainDialog(QApplication* theApp, QWidget *parent)
       CLOCK_IN (tr("Clock in")), CLOCK_OUT (tr("Clock out")), BREAK (tr("Start break")), BREAK_END (tr("Finish break")),
       ICON_CLOCK_IN (":/icon_clock_in"), ICON_CLOCK_OUT (":/icon_clock_out"), ICON_BREAK (":/icon_break_start"), ICON_BREAK_END (":/icon_break_end")
 {
+    setWindowFlags (Qt::Window);
     ui.setupUi (this);
     ui.workingTime->display ("--:--");
     this->setWindowIcon (QIcon(":/icon_main"));
