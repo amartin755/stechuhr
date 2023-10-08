@@ -1,7 +1,7 @@
 ###############################################################################
 cmake_minimum_required (VERSION 3.18)
 
-project (Stechuhr VERSION 0.0.1
+project (Stechuhr VERSION 0.1.0
                  DESCRIPTION "A time tracking utility"
                  LANGUAGES CXX)
 ###############################################################################
@@ -81,6 +81,7 @@ message (STATUS "  git commit = ${GIT_COMMIT}")
 set (SOURCE_DIR src)
 set (TS_DIR ${SOURCE_DIR}/I10n)
 set (SOURCES
+    ${SOURCE_DIR}/dateTimeDialog.ui
     ${SOURCE_DIR}/main.cpp
     ${SOURCE_DIR}/mainDialog.ui
     ${SOURCE_DIR}/maindialog.h

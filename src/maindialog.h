@@ -54,6 +54,8 @@ private:
     void updateWidgetStyles ();
     void setupTimer ();
     void keyPressEvent (QKeyEvent *e);
+    void closeEvent (QCloseEvent *event);
+    void readSettings ();
     Stechuhr m_wtClock;
 
     Ui::Dialog ui;

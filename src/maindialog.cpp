@@ -20,6 +20,7 @@
 #include <QKeyEvent>
 #include <QMessageBox>
 #include <QtLogging>
+#include <QSettings>
 #include "maindialog.h"
 
 MainDialog::MainDialog(QApplication* theApp, QWidget *parent)
@@ -31,6 +32,7 @@ MainDialog::MainDialog(QApplication* theApp, QWidget *parent)
     ui.setupUi (this);
     ui.workingTime->display ("--:--");
     this->setWindowIcon (QIcon(":/icon_main"));
+    readSettings ();
 
     m_updateTimer  = new QTimer (this);
 
@@ -270,4 +272,23 @@ void MainDialog::showAbout()
     .arg (GIT_BRANCH)
     .arg (GIT_COMMIT)
     .arg (BUILD_TYPE));
+}
+
+void MainDialog::closeEvent(QCloseEvent *event)
+{
+    QSettings s;
+    s.beginGroup ("gui-state");
+    s.setValue("main-dialog", saveGeometry());
+    s.setValue("main-splitter", ui.splitter->saveState());
+    s.endGroup ();
+
+    QDialog::closeEvent(event);
+}
+void MainDialog::readSettings()
+{
+    QSettings s;
+    s.beginGroup ("gui-state");
+    restoreGeometry(s.value("main-dialog").toByteArray());
+    ui.splitter->restoreState(s.value("main-splitter").toByteArray());
+    s.endGroup ();
 }
