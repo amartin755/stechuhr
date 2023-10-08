@@ -37,7 +37,7 @@ bool Stechuhr::takesBreak () const
 
 bool Stechuhr::exceedsDay () const
 {
-    return !m_events.isEmpty() && (m_events.first().second.date() != m_events.last().second.date());
+    return !m_events.isEmpty() && (m_events.first().second.date() != QDateTime::currentDateTime ().date());
 }
 
 void Stechuhr::clockIn ()
