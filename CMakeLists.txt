@@ -81,7 +81,6 @@ message (STATUS "  git commit = ${GIT_COMMIT}")
 set (SOURCE_DIR src)
 set (TS_DIR ${SOURCE_DIR}/I10n)
 set (SOURCES
-    ${SOURCE_DIR}/dateTimeDialog.ui
     ${SOURCE_DIR}/main.cpp
     ${SOURCE_DIR}/mainDialog.ui
     ${SOURCE_DIR}/maindialog.h
