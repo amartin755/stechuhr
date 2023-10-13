@@ -22,6 +22,7 @@
 #include <QtLogging>
 #include <QSettings>
 #include "maindialog.h"
+#include "datetimedialog.h"
 
 MainDialog::MainDialog(QApplication* theApp, QWidget *parent)
     : QDialog(parent), 
@@ -46,6 +47,7 @@ MainDialog::MainDialog(QApplication* theApp, QWidget *parent)
     connect (&m_wtClock, &Stechuhr::breakFinished, this, &MainDialog::onBreakFinished);
     connect (ui.btnAbout, &QPushButton::clicked, this, &MainDialog::showAbout);
     connect (ui.btnUndo, &QPushButton::clicked, this, &MainDialog::undo);
+    connect (ui.treeWidget, &QTreeWidget::itemDoubleClicked, this, &MainDialog::editEvent);
 
     // not implemented yes -> hide
     ui.btnReport->setVisible (false);
@@ -142,6 +144,14 @@ void MainDialog::updateList (const QString& iconPath, const QString& caption, co
     i->setText (1, multipleDays ? QLocale::system().toString(time, QLocale::ShortFormat) : time.toString ("hh:mm:ss"));
     i->setText (2, caption);
     i->setIcon (0, QIcon (iconPath));
+    ui.treeWidget->resizeColumnToContents (0);
+}
+
+void MainDialog::updateList (int pos, const QDateTime& time)
+{
+    bool multipleDays = m_wtClock.exceedsDay ();
+    QTreeWidgetItem* i = ui.treeWidget->topLevelItem (pos);
+    i->setText (1, multipleDays ? QLocale::system().toString(time, QLocale::ShortFormat) : time.toString ("hh:mm:ss"));
     ui.treeWidget->resizeColumnToContents (0);
 }
 
@@ -284,6 +294,7 @@ void MainDialog::closeEvent(QCloseEvent *event)
 
     QDialog::closeEvent(event);
 }
+
 void MainDialog::readSettings()
 {
     QSettings s;
@@ -291,4 +302,32 @@ void MainDialog::readSettings()
     restoreGeometry(s.value("main-dialog").toByteArray());
     ui.splitter->restoreState(s.value("main-splitter").toByteArray());
     s.endGroup ();
+}
+
+void MainDialog::editEvent(QTreeWidgetItem *item, int)
+{
+    int pos = ui.treeWidget->indexOfTopLevelItem (item);
+    QDateTime time, min, max;
+    if (m_wtClock.getTimeOfEvent (pos, time, min, max))
+    {
+        DateTimeInputDialog dlg (time, this);
+        if (dlg.exec () == QDialog::Accepted)
+        {
+            time = dlg.dateTime ();
+
+            if (time > max || time < min)
+            {
+                QMessageBox::critical (this, "", 
+                    tr("Allowed range of entered date and time must be between<br>%1 and %2")
+                    .arg (QLocale::system().toString(min, QLocale::ShortFormat))
+                    .arg (QLocale::system().toString(max, QLocale::ShortFormat)));
+            }
+            else
+            {
+                m_wtClock.setTimeOfEvent (pos, time);
+                updateList (pos, time);
+                updateTime ();
+            }
+        }
+    }
 }

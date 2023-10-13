@@ -48,9 +48,11 @@ private slots:
     void onBreakFinished (const QDateTime&);
     void showAbout ();
     void undo ();
+    void editEvent(QTreeWidgetItem *item, int column);
 
 private:
     void updateList (const QString& iconPath, const QString& caption, const QDateTime& time);
+    void updateList (int pos, const QDateTime& time);
     void updateWidgetStyles ();
     void setupTimer ();
     void keyPressEvent (QKeyEvent *e);

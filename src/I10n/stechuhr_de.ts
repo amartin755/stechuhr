@@ -5,12 +5,11 @@
     <name>Dialog</name>
     <message>
         <location filename="../mainDialog.ui" line="+14"/>
-        <location/>
         <source>Stechuhr</source>
         <translation>Stechuhr</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+21"/>
         <source>Undo</source>
         <translation>Rückgängig</translation>
     </message>
@@ -25,14 +24,12 @@
         <translation>Über Stechuhr</translation>
     </message>
     <message>
-        <location line="+43"/>
-        <location/>
+        <location line="+74"/>
         <source>Clock in</source>
         <translation>Kommen</translation>
     </message>
     <message>
         <location line="+17"/>
-        <location/>
         <source>Start break</source>
         <translation>Pause</translation>
     </message>
@@ -41,10 +38,10 @@
     <name>MainDialog</name>
     <message>
         <source>Break</source>
-        <translation>Pause</translation>
+        <translation type="vanished">Pause</translation>
     </message>
     <message>
-        <location filename="../maindialog.cpp" line="+27"/>
+        <location filename="../maindialog.cpp" line="+29"/>
         <source>Clock in</source>
         <translation>Kommen</translation>
     </message>
@@ -64,7 +61,7 @@
         <translation>Pause beenden</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+42"/>
         <source>Application has been closed while clocked in.</source>
         <translation>Die Anwendung wurde beendet ohne &apos;Gehen&apos; zu buchen.</translation>
     </message>
@@ -84,14 +81,42 @@
         <translation>Möchten Sie die gespeicherte Sitzung fortsetzen oder verwerfen?</translation>
     </message>
     <message>
-        <location line="+169"/>
+        <location line="+177"/>
         <source>About Stechuhr</source>
         <translation>Über Stechuhr</translation>
     </message>
     <message>
         <location line="+0"/>
-        <source>&lt;H2&gt;&lt;b&gt;Stechuhr&lt;/b&gt;&lt;/H2&gt;Version %1&lt;br&gt;&lt;br&gt;A working time tracking utility.&lt;br&gt;&lt;a href=https://github.com/amartin755/stechuhr&gt;https://github.com/amartin755/stechuhr&lt;/a&gt;&lt;br&gt;&lt;br&gt;Copyright (C) 2023 Andreas Martin&lt;br&gt;&lt;br&gt;This program is covered by the GNU General Public License, version 3 (GPLv3),&lt;a href=http://www.gnu.org/licenses&gt;http://www.gnu.org/licenses&lt;/a&gt;&lt;br&gt;It uses the 3rd party components, covered by their respective license:&lt;br&gt;&lt;br&gt;QT [v%2] (&lt;a href=http://qt.io&gt;http://qt.io&lt;/a&gt;)&lt;br&gt;Breezy icons (&lt;a href=https://github.com/KDE/breeze-icons&gt;https://github.com/KDE/breeze-icons&gt;&lt;/a&gt;)</source>
+        <source>&lt;H2&gt;&lt;b&gt;Stechuhr&lt;/b&gt;&lt;/H2&gt;Version %1 (%2)&lt;br&gt;&lt;br&gt;A working time tracking utility.&lt;br&gt;&lt;a href=https://github.com/amartin755/stechuhr&gt;https://github.com/amartin755/stechuhr&lt;/a&gt;&lt;br&gt;&lt;br&gt;Copyright (C) 2023 Andreas Martin&lt;br&gt;&lt;br&gt;This program is covered by the GNU General Public License, version 3 (GPLv3),&lt;a href=http://www.gnu.org/licenses&gt;http://www.gnu.org/licenses&lt;/a&gt;&lt;br&gt;It uses the 3rd party components, covered by their respective license:&lt;br&gt;&lt;br&gt;QT [v%3] (&lt;a href=http://qt.io&gt;http://qt.io&lt;/a&gt;)&lt;br&gt;Breezy icons (&lt;a href=https://github.com/KDE/breeze-icons&gt;https://github.com/KDE/breeze-icons&gt;&lt;/a&gt;)&lt;br&gt;&lt;br&gt;Build:&lt;br&gt;%4-%5 (%6)</source>
         <translation>&lt;H2&gt;&lt;b&gt;Stechuhr&lt;/b&gt;&lt;/H2&gt;Version %1&lt;br&gt;&lt;br&gt;Ein einfaches Programm zur Erfassung der Arbeitszeit.&lt;br&gt;&lt;a href=https://github.com/amartin755/stechuhr&gt;https://github.com/amartin755/stechuhr&lt;/a&gt;&lt;br&gt;&lt;br&gt;Copyright (C) 2023 Andreas Martin&lt;br&gt;&lt;br&gt;Dieses Programm ist freie Software. Sie können es weitergeben oder ändern, solange Sie dabei den Bedingungen der GNU General Public License Version 3 (GPL), wie von der Free Software Foundation herausgegeben, folgen, &lt;a href=http://www.gnu.org/licenses&gt;http://www.gnu.org/licenses&lt;/a&gt;&lt;br&gt;Ebenso werden Komponenten von Drittanbietern verwendet, die jeweils unter ihrer eigenen Lizenz stehen:&lt;br&gt;&lt;br&gt;QT [v%2] (&lt;a href=http://qt.io&gt;http://qt.io&lt;/a&gt;)&lt;br&gt;Breezy icons (&lt;a href=https://github.com/KDE/breeze-icons&gt;https://github.com/KDE/breeze-icons&gt;&lt;/a&gt;)</translation>
+    </message>
+    <message>
+        <location line="+61"/>
+        <source>Allowed range of entered date and time must be between&lt;br&gt;%1 and %2</source>
+        <translation>Das eingegebene Datum und Uhrzeit müssen zwischen&lt;br&gt;%1 und %2 liegen.</translation>
+    </message>
+</context>
+<context>
+    <name>dateTimDialog</name>
+    <message>
+        <location filename="../dateTimeDialog.ui" line="+20"/>
+        <source>Set date/time</source>
+        <translation>Uhrzeit/Datum ändern</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Date</source>
+        <translation>Datum</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Time</source>
+        <translation>Uhrzeit</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>HH:mm:ss</source>
+        <translation>HH:mm:ss</translation>
     </message>
 </context>
 </TS>

@@ -46,6 +46,8 @@ public:
     bool isSavedSessionAvailable(QDateTime& savedAt) const;
     void loadSession ();
     void removeSession ();
+    bool getTimeOfEvent (int index, QDateTime& time, QDateTime& minAllowedValue, QDateTime& maxAllowedValue) const;
+    bool setTimeOfEvent (int index, QDateTime& time);
 
 signals:
     void clockedIn (const QDateTime&);

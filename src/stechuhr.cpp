@@ -95,6 +95,36 @@ void Stechuhr::handleEvent (EventType type, const QDateTime* t, bool emitSignal)
     }
 }
 
+bool Stechuhr::getTimeOfEvent (int index, QDateTime& time, QDateTime& minAllowedValue, QDateTime& maxAllowedValue) const
+{
+    int size = m_events.size();
+    Q_ASSERT (index < size);
+    if (index < size)
+    {
+        time = m_events.at (index).second;
+        maxAllowedValue = QDateTime::currentDateTime ();
+        minAllowedValue.setSecsSinceEpoch (0);
+        if (index > 0)
+            minAllowedValue = m_events.at (index - 1).second;
+        if (size > 1 && index < (size - 1))
+            maxAllowedValue = m_events.at (index + 1).second;
+        return true;
+    }
+    return false;
+}
+
+bool Stechuhr::setTimeOfEvent (int index, QDateTime& time)
+{
+    Q_ASSERT (index < m_events.size());
+    if (index < m_events.size())
+    {
+        m_events[index].second = time;
+        saveSession ();
+        return true;
+    }
+    return false;
+}
+
 void Stechuhr::getWorkingTime (unsigned &hours, unsigned &minutes) const
 {
     hours = 0;
@@ -244,3 +274,4 @@ void Stechuhr::removeSession ()
     s.endGroup ();
     m_events.clear ();
  }
+
