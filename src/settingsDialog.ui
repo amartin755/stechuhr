@@ -50,7 +50,7 @@
    <property name="checked">
     <bool>false</bool>
    </property>
-   <widget class="QPlainTextEdit" name="textEditPath">
+   <widget class="QLineEdit" name="textEditPath">
     <property name="geometry">
      <rect>
       <x>90</x>

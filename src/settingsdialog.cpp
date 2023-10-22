@@ -16,6 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #include <QSettings>
+#include <QStandardPaths>
+#include <QStringList>
 
 #include "settingsdialog.h"
 
@@ -27,6 +29,19 @@ SettingsDialog::SettingsDialog (QWidget *parent)
     QSettings s;
     s.beginGroup ("logbook");
     m_gui.groupLogbook->setChecked(s.value ("enabled", true).toBool());
-qWarning() << s.fileName();
-    //m_gui.textEditPath.setPlainText
+
+    QString dbPath = s.value ("db").toString();
+    if (dbPath.size() == 0)
+    {
+        getDefaultDbPath (dbPath);
+        dbPath += "/logbook.sqlite";
+    }
+    m_gui.textEditPath->setText (dbPath);
 }
+
+void SettingsDialog::getDefaultDbPath (QString& path) const
+{
+    path = QStandardPaths::writableLocation (QStandardPaths::AppDataLocation);
+qWarning() << "defaultPath: " << path;
+}
+

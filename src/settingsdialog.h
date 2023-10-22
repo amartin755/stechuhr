@@ -21,6 +21,7 @@
 #define SETTINGSDIALOG_H
 
 #include <QDateTime>
+#include <QString>
 
 #include "ui_settingsDialog.h"
 
@@ -32,6 +33,7 @@ public:
     explicit SettingsDialog (QWidget *parent = nullptr);
 
 private:
+    void getDefaultDbPath (QString& path) const;
     Ui::settingsDialog m_gui;
 };
 
