@@ -18,6 +18,7 @@
 #include <QSettings>
 #include <QStandardPaths>
 #include <QStringList>
+#include <QFileDialog>
 
 #include "settingsdialog.h"
 
@@ -28,15 +29,18 @@ SettingsDialog::SettingsDialog (QWidget *parent)
 
     QSettings s;
     s.beginGroup ("logbook");
-    m_gui.groupLogbook->setChecked(s.value ("enabled", true).toBool());
+    m_gui.groupLogbook->setChecked (s.value ("enabled", true).toBool());
 
     QString dbPath = s.value ("db").toString();
-    if (dbPath.size() == 0)
+    if (dbPath.isEmpty ())
     {
         getDefaultDbPath (dbPath);
         dbPath += "/logbook.sqlite";
     }
     m_gui.textEditPath->setText (dbPath);
+
+    connect (this, &QDialog::accepted, this, &SettingsDialog::onAccepted);
+    connect (m_gui.btnSelectDbPath, &QPushButton::clicked, this, &SettingsDialog::selectDbFile);
 }
 
 void SettingsDialog::getDefaultDbPath (QString& path) const
@@ -45,3 +49,16 @@ void SettingsDialog::getDefaultDbPath (QString& path) const
 qWarning() << "defaultPath: " << path;
 }
 
+void SettingsDialog::onAccepted ()
+{
+    QSettings s;
+    s.beginGroup ("logbook");
+    s.setValue ("enabled", m_gui.groupLogbook->isEnabled ()));
+    s.setValue ("db", m_gui.textEditPath->text());
+}
+
+void SettingsDialog::selectDbFile ()
+{
+    //FIXME DontConfirmOverwrite seems to be ignored on gnome
+    QString f = QFileDialog::getSaveFileName (this, "", m_gui.textEditPath->text (), "", nullptr, QFileDialog::DontConfirmOverwrite);
+}

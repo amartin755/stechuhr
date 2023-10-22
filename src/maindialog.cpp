@@ -63,7 +63,7 @@ MainDialog::MainDialog(QApplication* theApp, QWidget *parent)
     QDateTime savedAt;
     if (m_wtClock.isSavedSessionAvailable (savedAt))
     {
-        QMessageBox msgBox;
+        QMessageBox msgBox (this);
         QPushButton *btnClockOut = nullptr;
 
         msgBox.setIcon (QMessageBox::Question);
@@ -333,6 +333,6 @@ void MainDialog::editEvent(QTreeWidgetItem *item, int)
 
 void MainDialog::showSettings ()
 {
-    SettingsDialog dlg;
+    SettingsDialog dlg (this);
     dlg.exec ();
 }

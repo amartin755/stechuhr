@@ -32,6 +32,10 @@ class SettingsDialog : public QDialog
 public:
     explicit SettingsDialog (QWidget *parent = nullptr);
 
+private slots:
+    void onAccepted ();
+    void selectDbFile ();
+    
 private:
     void getDefaultDbPath (QString& path) const;
     Ui::settingsDialog m_gui;
