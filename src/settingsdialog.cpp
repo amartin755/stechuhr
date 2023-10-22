@@ -53,7 +53,7 @@ void SettingsDialog::onAccepted ()
 {
     QSettings s;
     s.beginGroup ("logbook");
-    s.setValue ("enabled", m_gui.groupLogbook->isEnabled ()));
+    s.setValue ("enabled", m_gui.groupLogbook->isEnabled ());
     s.setValue ("db", m_gui.textEditPath->text());
 }
 
