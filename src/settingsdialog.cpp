@@ -15,18 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#include <QSettings>
 
-#include "datetimedialog.h"
+#include "settingsdialog.h"
 
-DateTimeInputDialog::DateTimeInputDialog (const QDateTime &dateTime, QWidget *parent)
+SettingsDialog::SettingsDialog (QWidget *parent)
     : QDialog(parent)
 {
     m_gui.setupUi (this);
-    m_gui.dateEdit->setDate (dateTime.date ());
-    m_gui.timeEdit->setTime (dateTime.time ());
-}
 
-QDateTime DateTimeInputDialog::dateTime () const
-{
-    return QDateTime (m_gui.dateEdit->date(), m_gui.timeEdit->time());
+    QSettings s;
+    s.beginGroup ("logbook");
+    m_gui.groupLogbook->setChecked(s.value ("enabled", true).toBool());
+qWarning() << s.fileName();
+    //m_gui.textEditPath.setPlainText
 }

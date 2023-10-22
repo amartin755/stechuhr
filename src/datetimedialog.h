@@ -33,7 +33,7 @@ public:
     QDateTime dateTime () const;
 
 private:
-    Ui::dateTimDialog ui;
+    Ui::dateTimDialog m_gui;
 };
 
 #endif

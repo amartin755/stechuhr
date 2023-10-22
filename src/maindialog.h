@@ -47,6 +47,7 @@ private slots:
     void onBreakStarted (const QDateTime&);
     void onBreakFinished (const QDateTime&);
     void showAbout ();
+    void showSettings ();
     void undo ();
     void editEvent(QTreeWidgetItem *item, int column);
 
@@ -60,7 +61,7 @@ private:
     void readSettings ();
     Stechuhr m_wtClock;
 
-    Ui::Dialog ui;
+    Ui::Dialog m_gui;
     QTimer* m_updateTimer;
     const QString CLOCK_IN;
     const QString CLOCK_OUT;

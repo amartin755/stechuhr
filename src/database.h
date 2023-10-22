@@ -16,17 +16,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "datetimedialog.h"
 
-DateTimeInputDialog::DateTimeInputDialog (const QDateTime &dateTime, QWidget *parent)
-    : QDialog(parent)
-{
-    m_gui.setupUi (this);
-    m_gui.dateEdit->setDate (dateTime.date ());
-    m_gui.timeEdit->setTime (dateTime.time ());
-}
+#ifndef DATABASE_H
+#define DATABASE_H
 
-QDateTime DateTimeInputDialog::dateTime () const
+class Database
 {
-    return QDateTime (m_gui.dateEdit->date(), m_gui.timeEdit->time());
-}
+    explicit Database ();
+};
+
+#endif

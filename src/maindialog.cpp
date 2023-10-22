@@ -23,6 +23,8 @@
 #include <QSettings>
 #include "maindialog.h"
 #include "datetimedialog.h"
+#include "settingsdialog.h"
+
 
 MainDialog::MainDialog(QApplication* theApp, QWidget *parent)
     : QDialog(parent), 
@@ -30,28 +32,25 @@ MainDialog::MainDialog(QApplication* theApp, QWidget *parent)
       ICON_CLOCK_IN (":/icon_clock_in"), ICON_CLOCK_OUT (":/icon_clock_out"), ICON_BREAK (":/icon_break_start"), ICON_BREAK_END (":/icon_break_end")
 {
     setWindowFlags (Qt::Window);
-    ui.setupUi (this);
-    ui.workingTime->display ("--:--");
+    m_gui.setupUi (this);
+    m_gui.workingTime->display ("--:--");
     this->setWindowIcon (QIcon(":/icon_main"));
     readSettings ();
 
     m_updateTimer  = new QTimer (this);
 
     connect (m_updateTimer, &QTimer::timeout, this, &MainDialog::updateTime);
-    connect (ui.btnClockInOut, &QPushButton::clicked, this, &MainDialog::clockInOut);
-    connect (ui.btnBreak, &QPushButton::clicked, this, &MainDialog::breakStartStop);
+    connect (m_gui.btnClockInOut, &QPushButton::clicked, this, &MainDialog::clockInOut);
+    connect (m_gui.btnBreak, &QPushButton::clicked, this, &MainDialog::breakStartStop);
     connect (theApp, &QApplication::aboutToQuit, this, &MainDialog::saveState, Qt::DirectConnection);
     connect (&m_wtClock, &Stechuhr::clockedIn, this, &MainDialog::onClockedIn);
     connect (&m_wtClock, &Stechuhr::clockedOut, this, &MainDialog::onClockedOut);
     connect (&m_wtClock, &Stechuhr::breakStarted, this, &MainDialog::onBreakStarted);
     connect (&m_wtClock, &Stechuhr::breakFinished, this, &MainDialog::onBreakFinished);
-    connect (ui.btnAbout, &QPushButton::clicked, this, &MainDialog::showAbout);
-    connect (ui.btnUndo, &QPushButton::clicked, this, &MainDialog::undo);
-    connect (ui.treeWidget, &QTreeWidget::itemDoubleClicked, this, &MainDialog::editEvent);
-
-    // not implemented yes -> hide
-    ui.btnReport->setVisible (false);
-    ui.btnSettings->setVisible (false);
+    connect (m_gui.btnAbout, &QPushButton::clicked, this, &MainDialog::showAbout);
+    connect (m_gui.btnUndo, &QPushButton::clicked, this, &MainDialog::undo);
+    connect (m_gui.treeWidget, &QTreeWidget::itemDoubleClicked, this, &MainDialog::editEvent);
+    connect (m_gui.btnSettings, &QPushButton::clicked, this, &MainDialog::showSettings);
 
     /**
      * Handle unfinished sessions. There are two cases
@@ -104,7 +103,7 @@ void MainDialog::clockInOut ()
 {
     if (!m_wtClock.hasClockedIn ())
     {
-        ui.treeWidget->clear();
+        m_gui.treeWidget->clear();
         m_wtClock.clockIn ();
     }
     else
@@ -134,25 +133,25 @@ void MainDialog::updateTime ()
     m_wtClock.getWorkingTime (displayHours, displayMinutes);
  
     QString text = QString ("%1:%2").arg(displayHours, 2, 10, QChar('0')).arg(displayMinutes, 2, 10, QChar('0'));
-    ui.workingTime->display (text);
+    m_gui.workingTime->display (text);
 }
 
 void MainDialog::updateList (const QString& iconPath, const QString& caption, const QDateTime& time)
 {
     bool multipleDays = m_wtClock.exceedsDay ();
-    QTreeWidgetItem* i = new QTreeWidgetItem (ui.treeWidget);
+    QTreeWidgetItem* i = new QTreeWidgetItem (m_gui.treeWidget);
     i->setText (1, multipleDays ? QLocale::system().toString(time, QLocale::ShortFormat) : time.toString ("hh:mm:ss"));
     i->setText (2, caption);
     i->setIcon (0, QIcon (iconPath));
-    ui.treeWidget->resizeColumnToContents (0);
+    m_gui.treeWidget->resizeColumnToContents (0);
 }
 
 void MainDialog::updateList (int pos, const QDateTime& time)
 {
     bool multipleDays = m_wtClock.exceedsDay ();
-    QTreeWidgetItem* i = ui.treeWidget->topLevelItem (pos);
+    QTreeWidgetItem* i = m_gui.treeWidget->topLevelItem (pos);
     i->setText (1, multipleDays ? QLocale::system().toString(time, QLocale::ShortFormat) : time.toString ("hh:mm:ss"));
-    ui.treeWidget->resizeColumnToContents (0);
+    m_gui.treeWidget->resizeColumnToContents (0);
 }
 
 void MainDialog::setupTimer ()
@@ -218,40 +217,40 @@ void MainDialog::updateWidgetStyles ()
 {
     if (m_wtClock.hasClockedIn ())
     {
-        ui.btnClockInOut->setText (CLOCK_OUT);
-        ui.btnClockInOut->setIcon (QIcon(ICON_CLOCK_OUT));
+        m_gui.btnClockInOut->setText (CLOCK_OUT);
+        m_gui.btnClockInOut->setIcon (QIcon(ICON_CLOCK_OUT));
     }
     else
     {
-        ui.btnClockInOut->setText (CLOCK_IN);
-        ui.btnClockInOut->setIcon (QIcon(ICON_CLOCK_IN));
+        m_gui.btnClockInOut->setText (CLOCK_IN);
+        m_gui.btnClockInOut->setIcon (QIcon(ICON_CLOCK_IN));
     }
     if (m_wtClock.takesBreak ())
     {
-        ui.btnBreak->setText (BREAK_END);
-        ui.btnBreak->setIcon (QIcon(ICON_BREAK_END));
-        ui.workingTime->setSegmentStyle (QLCDNumber::Outline);
+        m_gui.btnBreak->setText (BREAK_END);
+        m_gui.btnBreak->setIcon (QIcon(ICON_BREAK_END));
+        m_gui.workingTime->setSegmentStyle (QLCDNumber::Outline);
     }
     else
     {
-        ui.btnBreak->setText (BREAK);
-        ui.btnBreak->setIcon (QIcon(ICON_BREAK));
-        ui.workingTime->setSegmentStyle (QLCDNumber::Flat);
+        m_gui.btnBreak->setText (BREAK);
+        m_gui.btnBreak->setIcon (QIcon(ICON_BREAK));
+        m_gui.workingTime->setSegmentStyle (QLCDNumber::Flat);
     }
 }
 
 void MainDialog::undo ()
 {
     m_wtClock.undo ();
-    int size = ui.treeWidget->topLevelItemCount();
+    int size = m_gui.treeWidget->topLevelItemCount();
     if (size > 0)
     {
-        delete ui.treeWidget->takeTopLevelItem (size - 1);
+        delete m_gui.treeWidget->takeTopLevelItem (size - 1);
         updateWidgetStyles ();
         updateTime ();
         setupTimer ();
         if (size == 1)
-            ui.workingTime->display ("--:--");
+            m_gui.workingTime->display ("--:--");
     }
 }
 
@@ -289,7 +288,7 @@ void MainDialog::closeEvent(QCloseEvent *event)
     QSettings s;
     s.beginGroup ("gui-state");
     s.setValue("main-dialog", saveGeometry());
-    s.setValue("main-splitter", ui.splitter->saveState());
+    s.setValue("main-splitter", m_gui.splitter->saveState());
     s.endGroup ();
 
     QDialog::closeEvent(event);
@@ -300,13 +299,13 @@ void MainDialog::readSettings()
     QSettings s;
     s.beginGroup ("gui-state");
     restoreGeometry(s.value("main-dialog").toByteArray());
-    ui.splitter->restoreState(s.value("main-splitter").toByteArray());
+    m_gui.splitter->restoreState(s.value("main-splitter").toByteArray());
     s.endGroup ();
 }
 
 void MainDialog::editEvent(QTreeWidgetItem *item, int)
 {
-    int pos = ui.treeWidget->indexOfTopLevelItem (item);
+    int pos = m_gui.treeWidget->indexOfTopLevelItem (item);
     QDateTime time, min, max;
     if (m_wtClock.getTimeOfEvent (pos, time, min, max))
     {
@@ -330,4 +329,10 @@ void MainDialog::editEvent(QTreeWidgetItem *item, int)
             }
         }
     }
+}
+
+void MainDialog::showSettings ()
+{
+    SettingsDialog dlg;
+    dlg.exec ();
 }
