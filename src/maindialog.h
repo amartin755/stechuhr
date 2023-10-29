@@ -64,9 +64,13 @@ private:
     Ui::Dialog m_gui;
     QTimer* m_updateTimer;
     const QString CLOCK_IN;
+    const QString CLOCKED_IN;
     const QString CLOCK_OUT;
+    const QString CLOCKED_OUT;
     const QString BREAK;
+    const QString BREAK_STARTED;
     const QString BREAK_END;
+    const QString BREAK_FINISHED;
     const QString ICON_CLOCK_IN;
     const QString ICON_CLOCK_OUT;
     const QString ICON_BREAK;
