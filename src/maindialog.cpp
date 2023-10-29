@@ -26,8 +26,18 @@
 
 MainDialog::MainDialog(QApplication* theApp, QWidget *parent)
     : QDialog(parent), 
-      CLOCK_IN (tr("Clock in")), CLOCK_OUT (tr("Clock out")), BREAK (tr("Start break")), BREAK_END (tr("Finish break")),
-      ICON_CLOCK_IN (":/icon_clock_in"), ICON_CLOCK_OUT (":/icon_clock_out"), ICON_BREAK (":/icon_break_start"), ICON_BREAK_END (":/icon_break_end")
+      CLOCK_IN       (tr("Clock in")), 
+      CLOCKED_IN     (tr("Clocked in")), 
+      CLOCK_OUT      (tr("Clock out")), 
+      CLOCKED_OUT    (tr("Clocked out")), 
+      BREAK          (tr("Start break")), 
+      BREAK_STARTED  (tr("Break started")), 
+      BREAK_END      (tr("Finish break")), 
+      BREAK_FINISHED (tr("Break finished")),
+      ICON_CLOCK_IN  (":/icon_clock_in"), 
+      ICON_CLOCK_OUT (":/icon_clock_out"), 
+      ICON_BREAK     (":/icon_break_start"), 
+      ICON_BREAK_END (":/icon_break_end")
 {
     setWindowFlags (Qt::Window);
     ui.setupUi (this);
@@ -186,7 +196,7 @@ void MainDialog::saveState ()
 
 void MainDialog::onClockedIn (const QDateTime& time)
 {
-    updateList (ICON_CLOCK_IN, CLOCK_IN, time);
+    updateList (ICON_CLOCK_IN, CLOCKED_IN, time);
     updateWidgetStyles ();
     updateTime ();
     setupTimer ();
@@ -194,7 +204,7 @@ void MainDialog::onClockedIn (const QDateTime& time)
 
 void MainDialog::onClockedOut (const QDateTime& time)
 {
-    updateList (ICON_CLOCK_OUT, CLOCK_OUT, time);
+    updateList (ICON_CLOCK_OUT, CLOCKED_OUT, time);
     updateWidgetStyles ();
     updateTime ();
     setupTimer ();
@@ -202,14 +212,14 @@ void MainDialog::onClockedOut (const QDateTime& time)
 
 void MainDialog::onBreakStarted (const QDateTime& time)
 {
-    updateList (ICON_BREAK, BREAK, time);
+    updateList (ICON_BREAK, BREAK_STARTED, time);
     updateWidgetStyles ();
     updateTime ();
 }
 
 void MainDialog::onBreakFinished (const QDateTime& time)
 {
-    updateList (ICON_BREAK_END, BREAK_END, time);
+    updateList (ICON_BREAK_END, BREAK_FINISHED, time);
     updateWidgetStyles ();
     updateTime ();
 }
@@ -268,7 +278,7 @@ void MainDialog::showAbout()
     "Copyright (C) 2023 Andreas Martin<br><br>"
 
     "This program is covered by the GNU General Public License, version 3 (GPLv3),"
-    "<a href=http://www.gnu.org/licenses>http://www.gnu.org/licenses</a><br>"
+    "<br><a href=http://www.gnu.org/licenses>http://www.gnu.org/licenses</a><br>"
     "It uses the 3rd party components, covered by their respective license:<br><br>"
 
     "QT [v%3] (<a href=http://qt.io>http://qt.io</a>)<br>"
