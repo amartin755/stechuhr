@@ -28,6 +28,7 @@
 
 #include "ui_mainDialog.h"
 #include "stechuhr.h"
+#include "settings.h"
 
 class MainDialog : public QDialog
 {
@@ -59,6 +60,7 @@ private:
     void keyPressEvent (QKeyEvent *e);
     void closeEvent (QCloseEvent *event);
     void readSettings ();
+    Settings m_settings;
     Stechuhr m_wtClock;
 
     Ui::Dialog m_gui;

@@ -17,29 +17,33 @@
  */
 
 
-#ifndef SETTINGSDIALOG_H
-#define SETTINGSDIALOG_H
+#ifndef SETTINGS_H
+#define SETTINGS_H
 
-#include <QDateTime>
-#include <QString>
+#include <QSettings>
 
-#include "ui_settingsDialog.h"
-#include "settings.h"
-
-class SettingsDialog : public QDialog
+class Settings
 {
-    Q_OBJECT
+public:
+    explicit Settings ();
+    void setGuiState (const QByteArray& mainWindow, const QByteArray& splitter);
+    void getGuiState (QByteArray& mainWindow, QByteArray& splitter) const;
+    QString getDbPath () const;
+    bool getDbEnabled () const;
+    void setDbPath (const QString& path);
+    void setDbEnabled (bool enabled);
 
 public:
-    explicit SettingsDialog (Settings& settings, QWidget *parent = nullptr);
 
-private slots:
-    void onAccepted ();
-    void selectDbFile ();
-    
 private:
-    Settings& m_settings;
-    Ui::settingsDialog m_gui;
+    static const QString KEY_GROUP_GUI;
+    static const QString KEY_GUI_MAIN_DLG;
+    static const QString KEY_GUI_SPLITTER;
+    static const QString KEY_GROUP_LOGBOOK;
+    static const QString KEY_LOGBOOK_ENABLED;
+    static const QString KEY_LOGBOOK_DB;
+
+    QSettings m_settings;
 };
 
 #endif

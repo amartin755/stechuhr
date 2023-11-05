@@ -20,7 +20,7 @@
 #include <QKeyEvent>
 #include <QMessageBox>
 #include <QtLogging>
-#include <QSettings>
+
 #include "maindialog.h"
 #include "datetimedialog.h"
 #include "settingsdialog.h"
@@ -295,22 +295,18 @@ void MainDialog::showAbout()
 
 void MainDialog::closeEvent(QCloseEvent *event)
 {
-    QSettings s;
-    s.beginGroup ("gui-state");
-    s.setValue("main-dialog", saveGeometry());
-    s.setValue("main-splitter", m_gui.splitter->saveState());
-    s.endGroup ();
+    m_settings.setGuiState (saveGeometry(), m_gui.splitter->saveState());
 
     QDialog::closeEvent(event);
 }
 
 void MainDialog::readSettings()
 {
-    QSettings s;
-    s.beginGroup ("gui-state");
-    restoreGeometry(s.value("main-dialog").toByteArray());
-    m_gui.splitter->restoreState(s.value("main-splitter").toByteArray());
-    s.endGroup ();
+    QByteArray dlgState, splitterState;
+
+    m_settings.getGuiState (dlgState, splitterState);
+    restoreGeometry (dlgState);
+    m_gui.splitter->restoreState(splitterState);
 }
 
 void MainDialog::editEvent(QTreeWidgetItem *item, int)
@@ -343,6 +339,6 @@ void MainDialog::editEvent(QTreeWidgetItem *item, int)
 
 void MainDialog::showSettings ()
 {
-    SettingsDialog dlg (this);
+    SettingsDialog dlg (m_settings, this);
     dlg.exec ();
 }
