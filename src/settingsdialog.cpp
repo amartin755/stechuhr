@@ -22,7 +22,7 @@
 
 
 SettingsDialog::SettingsDialog (Settings& settings, QWidget *parent)
-    : m_settings (settings), QDialog(parent)
+    : QDialog(parent), m_settings (settings)
 {
     m_gui.setupUi (this);
 
