@@ -20,6 +20,7 @@
 #include <QCoreApplication>
 #include <QTranslator>
 #include <QSettings>
+#include <QLibraryInfo>
 
 #include "maindialog.h"
 
@@ -33,6 +34,13 @@ int main (int argc, char** argv)
     QTranslator translator;
     if (translator.load(QLocale(), "stechuhr"_L1, "_"_L1, ":/i18n"_L1))
         app.installTranslator(&translator);   
+
+    QTranslator qtTranslator;
+    qWarning() << QLibraryInfo::path(QLibraryInfo::TranslationsPath);
+    qWarning() << QLocale::system().name();
+    if (qtTranslator.load("qt_" + QLocale::system().name(),
+                 QLibraryInfo::path(QLibraryInfo::TranslationsPath)))
+        app.installTranslator(&qtTranslator);   
 
     QCoreApplication::setApplicationName ("Stechuhr");
     QCoreApplication::setOrganizationDomain ("stechuhr.github.io");
