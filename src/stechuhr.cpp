@@ -18,7 +18,6 @@
 
 #include <QtGlobal>
 #include <QSettings>
-#include <QtLogging>
 
 #include "stechuhr.h"
 #include "database.h"

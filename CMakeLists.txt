@@ -27,7 +27,9 @@ endif()
 # check dependencies
 ###############################################################################
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools Sql)
-qt_standard_project_setup()
+if (Qt6Widgets_VERSION VERSION_GREATER_EQUAL 6.3)
+    qt_standard_project_setup()
+endif ()
 
 # preprocessor definitions
 ###############################################################################
@@ -93,7 +95,7 @@ set (SOURCES
     ${SOURCE_DIR}/stechuhr.cpp
     ${SOURCE_DIR}/stechuhr.qrc
 )
-set(CMAKE_AUTORCC ON)
+
 qt_add_executable (stechuhr ${SOURCES})
 qt_add_translations(stechuhr
     TS_FILES ${TS_DIR}/stechuhr_de.ts)
@@ -105,6 +107,9 @@ target_link_libraries(stechuhr PRIVATE Qt6::Widgets Qt6::Sql)
 set_target_properties(stechuhr PROPERTIES
     WIN32_EXECUTABLE ON
     MACOSX_BUNDLE ON
+    AUTOMOC ON
+    AUTOUIC ON
+    AUTORCC ON
 )
 
 # deploy target
@@ -113,9 +118,11 @@ install(TARGETS stechuhr
     BUNDLE  DESTINATION .
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
-qt_generate_deploy_app_script(
-    TARGET stechuhr
-    OUTPUT_SCRIPT deploy_script
-    NO_UNSUPPORTED_PLATFORM_ERROR
-)
-install(SCRIPT ${deploy_script})
+if (WIN32)
+    qt_generate_deploy_app_script(
+        TARGET stechuhr
+        OUTPUT_SCRIPT deploy_script
+        NO_UNSUPPORTED_PLATFORM_ERROR
+    )
+    install(SCRIPT ${deploy_script})
+endif()
