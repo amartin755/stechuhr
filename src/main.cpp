@@ -23,7 +23,6 @@
 
 #include "maindialog.h"
 
-using namespace Qt::StringLiterals;
 
 int main (int argc, char** argv)
 {
@@ -31,7 +30,7 @@ int main (int argc, char** argv)
 
     auto locale = QLocale::system();
     QTranslator translator;
-    if (translator.load(QLocale(), "stechuhr"_L1, "_"_L1, ":/i18n"_L1))
+    if (translator.load(QLocale(), "stechuhr", "_", ":/i18n"))
         app.installTranslator(&translator);   
 
     QCoreApplication::setApplicationName ("Stechuhr");
