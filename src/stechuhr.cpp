@@ -18,7 +18,6 @@
 
 #include <QtGlobal>
 #include <QSettings>
-#include <QtLogging>
 #include "stechuhr.h"
 
 Stechuhr::Stechuhr (QObject *parent) : QObject (parent)

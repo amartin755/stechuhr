@@ -19,7 +19,6 @@
 #include <QtGlobal>
 #include <QKeyEvent>
 #include <QMessageBox>
-#include <QtLogging>
 #include <QSettings>
 #include "maindialog.h"
 #include "datetimedialog.h"
