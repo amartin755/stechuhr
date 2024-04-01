@@ -93,7 +93,7 @@ set (SOURCES
     ${SOURCE_DIR}/stechuhr.cpp
     ${SOURCE_DIR}/stechuhr.qrc
 )
-set(CMAKE_AUTORCC ON)
+
 qt_add_executable (stechuhr ${SOURCES})
 qt_add_translations(stechuhr
     TS_FILES ${TS_DIR}/stechuhr_de.ts)
@@ -105,6 +105,9 @@ target_link_libraries(stechuhr PRIVATE Qt6::Widgets)
 set_target_properties(stechuhr PROPERTIES
     WIN32_EXECUTABLE ON
     MACOSX_BUNDLE ON
+    AUTOMOC ON
+    AUTOUIC ON
+    AUTORCC ON
 )
 
 # deploy target
