@@ -36,8 +36,6 @@ int main (int argc, char** argv)
         app.installTranslator(&translator);   
 
     QTranslator qtTranslator;
-    qWarning() << QLibraryInfo::path(QLibraryInfo::TranslationsPath);
-    qWarning() << QLocale::system().name();
     if (qtTranslator.load("qt_" + QLocale::system().name(),
                  QLibraryInfo::path(QLibraryInfo::TranslationsPath)))
         app.installTranslator(&qtTranslator);   

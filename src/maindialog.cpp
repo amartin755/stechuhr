@@ -27,7 +27,8 @@
 
 
 MainDialog::MainDialog(QApplication* theApp, QWidget *parent)
-    : QDialog(parent), 
+    : QDialog(parent),
+      m_wtClock (m_settings),
       CLOCK_IN       (tr("Clock in")), 
       CLOCKED_IN     (tr("Clocked in")), 
       CLOCK_OUT      (tr("Clock out")), 

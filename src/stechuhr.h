@@ -25,12 +25,15 @@
 #include <QList>
 #include <QPair>
 
+#include "settings.h"
+#include "eventtype.h"
+
 class Stechuhr : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit Stechuhr (QObject *parent = nullptr);
+    explicit Stechuhr (Settings& settings, QObject *parent = nullptr);
 
     bool hasClockedIn () const;
     bool takesBreak () const;
@@ -56,12 +59,13 @@ signals:
     void breakFinished (const QDateTime&);
 
 private:
-    enum EventType { CLOCK_IN, CLOCK_OUT, BREAK_START, BREAK_STOP };
     void handleEvent (EventType type, const QDateTime* time = nullptr, bool emitSignal = true);
     qint64 getBreakDuration () const;
     void saveSession () const;
+    bool writeToLogbook () const;
 
     QList<QPair<EventType, QDateTime>> m_events;
+    Settings& m_settings;
 
     const QString KEY_GROUP_SESSION = "last-session";
     const QString KEY_EVENTS = "events";

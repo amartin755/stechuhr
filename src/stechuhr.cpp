@@ -19,20 +19,22 @@
 #include <QtGlobal>
 #include <QSettings>
 #include <QtLogging>
-#include "stechuhr.h"
 
-Stechuhr::Stechuhr (QObject *parent) : QObject (parent)
+#include "stechuhr.h"
+#include "database.h"
+
+Stechuhr::Stechuhr (Settings& settings, QObject *parent) : QObject (parent), m_settings (settings)
 {
 }
 
 bool Stechuhr::hasClockedIn () const
 {
-    return !m_events.isEmpty() && m_events.first().first == CLOCK_IN && m_events.last().first != CLOCK_OUT;
+    return !m_events.isEmpty() && m_events.first().first == EventType::CLOCK_IN && m_events.last().first != EventType::CLOCK_OUT;
 }
 
 bool Stechuhr::takesBreak () const
 {
-    return !m_events.isEmpty() && m_events.last().first == BREAK_START;
+    return !m_events.isEmpty() && m_events.last().first == EventType::BREAK_START;
 }
 
 bool Stechuhr::exceedsDay () const
@@ -43,31 +45,35 @@ bool Stechuhr::exceedsDay () const
 void Stechuhr::clockIn ()
 {
     m_events.clear ();
-    handleEvent (CLOCK_IN);
+    handleEvent (EventType::CLOCK_IN);
     saveSession ();
 }
 
 void Stechuhr::clockOut (const QDateTime* time)
 {
     Q_ASSERT (hasClockedIn());
+
     if (takesBreak ())
         finishBreak (time);
-    handleEvent (CLOCK_OUT, time);
+    handleEvent (EventType::CLOCK_OUT, time);
     saveSession ();
+
+    if (m_settings.isDbEnabled ())
+        writeToLogbook ();
 }
 
 void Stechuhr::startBreak ()
 {
     Q_ASSERT (hasClockedIn());
     Q_ASSERT (!takesBreak());
-    handleEvent (BREAK_START);
+    handleEvent (EventType::BREAK_START);
     saveSession ();
 }
 
 void Stechuhr::finishBreak (const QDateTime* time)
 {
     Q_ASSERT (takesBreak());
-    handleEvent (BREAK_STOP, time);
+    handleEvent (EventType::BREAK_STOP, time);
     saveSession ();
 }
 
@@ -79,16 +85,16 @@ void Stechuhr::handleEvent (EventType type, const QDateTime* t, bool emitSignal)
     {
         switch (type)
         {
-            case Stechuhr::CLOCK_IN:
+            case EventType::CLOCK_IN:
                 emit clockedIn (time);
                 break;
-            case Stechuhr::CLOCK_OUT:
+            case EventType::CLOCK_OUT:
                 emit clockedOut (time);
                 break;
-            case Stechuhr::BREAK_START:
+            case EventType::BREAK_START:
                 emit breakStarted (time);
                 break;
-            case Stechuhr::BREAK_STOP:
+            case EventType::BREAK_STOP:
                 emit breakFinished (time);
                 break;
         }
@@ -155,11 +161,11 @@ qint64 Stechuhr::getBreakDuration () const
         QDateTime begin, end;
         for (const QPair<EventType, QDateTime>& item : m_events)
         {
-            if (item.first == BREAK_START)
+            if (item.first == EventType::BREAK_START)
             {
                 begin = item.second;
             }
-            else if (item.first == BREAK_STOP)
+            else if (item.first == EventType::BREAK_STOP)
             {
                 end = item.second;
                 duration += begin.secsTo (end);
@@ -233,6 +239,14 @@ void Stechuhr::saveSession () const
     }
     s.endArray ();
     s.endGroup ();
+}
+
+bool Stechuhr::writeToLogbook () const
+{
+    Database db(m_settings.getDbPath());
+db.createTestData ();
+    db.storeWorkday (m_events, "");
+    return true;
 }
 
 void Stechuhr::loadSession ()

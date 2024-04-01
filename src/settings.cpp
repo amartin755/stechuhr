@@ -49,7 +49,7 @@ QString Settings::getDbPath () const
         QStandardPaths::writableLocation (QStandardPaths::AppDataLocation) + "/logbook.sqlite").toString();
 }
 
-bool Settings::getDbEnabled () const
+bool Settings::isDbEnabled () const
 {
     return m_settings.value (KEY_LOGBOOK_ENABLED, true).toBool();
 }

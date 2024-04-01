@@ -29,7 +29,7 @@ public:
     void setGuiState (const QByteArray& mainWindow, const QByteArray& splitter);
     void getGuiState (QByteArray& mainWindow, QByteArray& splitter) const;
     QString getDbPath () const;
-    bool getDbEnabled () const;
+    bool isDbEnabled () const;
     void setDbPath (const QString& path);
     void setDbEnabled (bool enabled);
 

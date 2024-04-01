@@ -17,33 +17,13 @@
  */
 
 
-#ifndef DATABASE_H
-#define DATABASE_H
+#ifndef EVENTTYPE_H
+#define EVENTTYPE_H
 
-#include <QString>
-#include <QList>
-#include <QPair>
-
-#include "eventtype.h"
-
-class Database
-{
-public:
-    Database (const QString& dbPath);
-    ~Database ();
-    bool isOpen () const {return m_isOpen;};
-    bool storeWorkday (QList<QPair<EventType, QDateTime>> events, const QString& comment);
-
-#ifndef NDEBUG
-    void createTestData ();
-#endif
-
-private:
-    bool create ();
-    bool checkSchema ();
-    QString m_lastError;
-    bool m_isOpen;
-
-};
+/* 
+note: never change the order, because this type is stored as 
+      integer in a database. New events have to be added to the back.
+*/
+enum EventType { CLOCK_IN, CLOCK_OUT, BREAK_START, BREAK_STOP };
 
 #endif

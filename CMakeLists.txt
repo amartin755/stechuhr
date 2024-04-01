@@ -26,7 +26,7 @@ endif()
 
 # check dependencies
 ###############################################################################
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools Sql)
 qt_standard_project_setup()
 
 # preprocessor definitions
@@ -81,6 +81,7 @@ message (STATUS "  git commit = ${GIT_COMMIT}")
 set (SOURCE_DIR src)
 set (TS_DIR ${SOURCE_DIR}/I10n)
 set (SOURCES
+    ${SOURCE_DIR}/database.cpp
     ${SOURCE_DIR}/dateTimeDialog.ui
     ${SOURCE_DIR}/datetimedialog.cpp
     ${SOURCE_DIR}/main.cpp
@@ -99,7 +100,7 @@ qt_add_translations(stechuhr
 
 target_include_directories (stechuhr
     PRIVATE ${SOURCE_DIR})
-target_link_libraries(stechuhr PRIVATE Qt6::Widgets)
+target_link_libraries(stechuhr PRIVATE Qt6::Widgets Qt6::Sql)
 
 set_target_properties(stechuhr PROPERTIES
     WIN32_EXECUTABLE ON

@@ -26,7 +26,7 @@ SettingsDialog::SettingsDialog (Settings& settings, QWidget *parent)
 {
     m_gui.setupUi (this);
 
-    m_gui.groupLogbook->setChecked (m_settings.getDbEnabled ());
+    m_gui.groupLogbook->setChecked (m_settings.isDbEnabled ());
     m_gui.textEditPath->setText (m_settings.getDbPath ());
 
     connect (this, &QDialog::accepted, this, &SettingsDialog::onAccepted);
